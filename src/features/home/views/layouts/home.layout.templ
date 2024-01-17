@@ -1,0 +1,29 @@
+package home
+
+import (
+    "github.com/IqbalLx/food-order/src/shared/entities"
+
+    components "github.com/IqbalLx/food-order/src/features/home/views/components"
+    sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
+)
+
+templ Home(stores []entities.StoreWithCategories, size int, storesLength int, isScrollable bool) {
+    <div class="flex flex-col overflow-y-auto no-scrollbar">
+        <div class="sticky top-0 bg-white">
+            <div class="px-2">
+                @components.Searchbar(2)
+            </div>
+            <sl-progress-bar style="--height: 4px;" class="htmx-indicator w-full" indeterminate></sl-progress-bar>
+        </div>
+
+        <div class="flex flex-col gap-y-1 px-2">
+            for i, store := range stores {
+                @sharedComponents.StoreCard(store, size, i == storesLength - 1, isScrollable)
+            }
+
+            if (isScrollable) {
+                @sharedComponents.GenericCardSkeleton("store-last-card")
+            }
+        </div>
+    </div>
+}

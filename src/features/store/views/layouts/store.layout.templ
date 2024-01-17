@@ -1,0 +1,113 @@
+package store
+
+import (
+    "strconv"
+
+    "github.com/IqbalLx/food-order/src/shared/entities"
+    components "github.com/IqbalLx/food-order/src/features/store/views/components"
+    sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
+)
+
+templ StoreHeader(store entities.StoreWithCategories) {
+    <sl-card class="card-image bg-base-100 w-full mb-1">
+            <img
+                slot="image"
+                src={ store.Image }
+                alt={ store.Name }
+                class="aspect-square object-cover w-full h-40 flex-none"
+            />
+
+            <div class="flex flex-col justify-evenly m-2">
+                <div class="flex flex-row justify-between items-center w-full">
+                    <strong class="text-lg">{ store.Name }</strong>
+                    
+                    if store.Rating != 0 {
+                        <div class="flex flex-row items-center justify-center align-center gap-1">
+                            <sl-rating label="Rating" style="color: var(--sl-color-amber-500); --symbol-size: 0.8rem;"
+                                value={ strconv.FormatFloat(float64(store.Rating) / 10, 'f', 1, 32)} 
+                                precision="0.5" readonly></sl-rating>
+                            <p class="text-xs">{ strconv.FormatFloat(float64(store.Rating) / 10, 'f', 1, 32) } </p>
+                        </div>
+                    }
+                </div>
+
+                <p class="text-xs prose">
+                    { store.ShortDesc } — { store.Desc }
+                </p>
+
+                <div class="flex flex-row flex-wrap gap-1 w-full mt-4">
+                    for _, category := range store.Categories {
+                        <sl-tag size="small" pill>
+                            <small>{ category }</small>
+                        </sl-tag>
+                    }
+                </div>
+            </div>
+        </sl-card>
+}
+
+templ StoreFooter(store entities.StoreWithCategories, menuCategories []entities.StoreMenuCategory) {
+    <sl-tab-group placement="bottom" no-scroll-controls>
+        <sl-tab slot="nav" panel="all"
+            hx-get={ "/stores/" + store.ID + "/menus" }
+            hx-trigger="click"
+            hx-target="#menu-container"
+            hx-swap="innerHTML"
+            hx-indicator=".htmx-indicator"
+        >
+            <p class="text-xs m-2 my-4">
+                Semua Menu
+            </p>
+        </sl-tab>
+    
+        for _, menuCategory := range menuCategories {
+            <sl-tab slot="nav" panel={ menuCategory.ID }
+                hx-get={ "/stores/" + store.ID + "/menus?menu_category_id=" + menuCategory.ID }
+                hx-trigger="click"
+                hx-target="#menu-container"
+                hx-swap="innerHTML"
+                hx-indicator=".htmx-indicator"
+            >
+                <p class="text-xs m-2 my-4">
+                    { menuCategory.Name }
+                </p>
+            </sl-tab>
+        }
+    </sl-tab-group>
+}
+
+templ Store(
+        store entities.StoreWithCategories, 
+        menuCategories []entities.StoreMenuCategory,
+        menus []entities.StoreMenu, 
+        menuSize int, 
+        isMenuScrollable bool,
+    ) {
+    <div class="flex flex-col h-screen justify-between overflow-y-auto no-scrollbar">
+        <div>
+            <div class="sticky top-0 bg-white z-50">
+                <div class="px-2">
+                    @components.Searchbar(store.Name)
+                </div>
+                <sl-progress-bar style="--height: 4px;" class="htmx-indicator w-full" indeterminate></sl-progress-bar>
+            </div>
+
+            @StoreHeader(store)
+
+            <div id="menu-container" class="flex flex-col gap-y-1 px-2 mb-4"
+            >
+                for i, menu := range menus {
+                    @components.MenuCard(store, menu, menuSize, i == menuSize - 1, isMenuScrollable, false, "")
+                }
+
+                if (isMenuScrollable) {
+                    @sharedComponents.GenericCardSkeleton("menu-last-card")
+                }
+            </div>
+        </div>
+
+        <div class="sticky bottom-0 z-50 bg-white">
+            @StoreFooter(store, menuCategories)
+        </div>
+    </div>
+}

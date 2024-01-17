@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+sl-card.ltr::part(base) {
+  flex-direction: row;
+}
+
+sl-tab::part(base) {
+  padding: 0;
+  margin: 0;
+}
+
+sl-card::part(body) {
+  padding: 0;
+  margin: 0;
+}
+
+sl-card.disabled::part(base) {
+  background-color: rgb(241 245 249);
+}
+
+slot.card__body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.card.card--has-image {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/*
+    https://github.com/tailwindlabs/tailwindcss/discussions/2394
+    https://github.com/tailwindlabs/tailwindcss/pull/5732
+*/
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

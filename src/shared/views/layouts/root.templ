@@ -1,0 +1,41 @@
+package views
+
+templ Root(component templ.Component) {
+    <!DOCTYPE html>
+    <html lang="en" data-theme="light">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="/static/main.css"/>
+        <link rel="stylesheet" href="/shoelace/dist/themes/light.css" />
+        <title>Food Order</title>
+    </head>
+    <body class="bg-slate-50">
+        <section class="relative mx-auto flex h-[100dvh] w-full max-w-[425px] flex-1 flex-col bg-white">
+            @component
+        </section>
+    </body>
+    <script src="/static/htmx.min.js"></script>
+    <script type="module" src="/shoelace/cdn/shoelace.js"></script>
+    </html>
+}
+
+templ RootWithTitle(component templ.Component, title string) {
+    <!DOCTYPE html>
+    <html lang="en" data-theme="light">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="/static/main.css"/>
+        <link rel="stylesheet" href="/shoelace/dist/themes/light.css" />
+        <title>{ title } - Food Order</title>
+    </head>
+    <body class="bg-slate-50">
+        <section class="relative mx-auto flex h-[100dvh] w-full max-w-[425px] flex-1 flex-col bg-white">
+            @component
+        </section>
+    </body>
+    <script src="/static/htmx.min.js"></script>
+    <script type="module" src="/shoelace/cdn/shoelace.js"></script>
+    </html>
+}

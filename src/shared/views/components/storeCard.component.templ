@@ -1,0 +1,61 @@
+package views
+
+import (
+    "fmt"
+    "strconv"
+
+    "github.com/IqbalLx/food-order/src/shared/entities"
+)
+
+templ StoreCard(store entities.StoreWithCategories, size int, lastInList bool, isScrollable bool) {
+    <div hx-boost="true" hx-indicator=".htmx-indicator">
+        <a href={ templ.URL(fmt.Sprintf("/stores/%s", store.Slug)) } class="w-full">
+        <sl-card 
+            class="ltr card-image bg-base-100 shadow-sm w-full"
+            if (lastInList && isScrollable) {
+                hx-trigger="intersect once"
+                hx-get={ fmt.Sprintf("/stores?size=%d&last_store_secondary_id=%d", size, store.SecondaryID) }
+                hx-target="#store-last-card"
+                hx-swap="outerHTML"
+                hx-indicator=".htmx-indicator"
+            }
+            >
+            <img
+                slot="image"
+                src={ store.Image }
+                alt="Store Image"
+                class="aspect-square object-cover w-32 flex-none"
+            />
+
+            <div class="w-56 sm:w-60 h-32 md:w-64 flex-initial mx-2">
+                <div class="h-full flex flex-col justify-evenly">
+                    <div class="mb-1">
+                        <div class="flex flex-row justify-between items-center w-full">
+                            <strong class="text-sm">{ store.Name }</strong>
+                            
+                            if store.Rating != 0 {
+                                <div class="flex flex-row items-center">
+                                    <sl-icon name="star-fill" style="color: var(--sl-color-amber-500);" class="text-xs"></sl-icon>
+                                    <p class="text-xs">{ strconv.FormatFloat(float64(store.Rating) / 10, 'f', 1, 32) } </p>
+                                </div>
+                            }
+                        </div>
+
+                        <p class="text-xs">
+                            { store.ShortDesc }
+                        </p>
+                    </div>
+
+                    <div class="flex flex-row flex-wrap gap-1">
+                        for _, category := range store.Categories {
+                            <sl-tag size="small" pill>
+                                <small>{ category }</small>
+                            </sl-tag>
+                        }
+                    </div>
+                </div>
+            </div>
+        </sl-card>
+    </a>
+    </div>
+}

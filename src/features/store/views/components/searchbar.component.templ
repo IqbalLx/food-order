@@ -1,0 +1,13 @@
+package store
+
+import (
+	"fmt"
+)
+
+templ Searchbar(storeName string) {
+    <div class="w-full pt-4 pb-2 shadow-sm">
+        <sl-input placeholder={ fmt.Sprintf("Cari menu %s disini ...", storeName) } size="small" class="bg-white text-sm" pill clearable>
+            <sl-icon name="search" slot="prefix"></sl-icon>
+        </sl-input>
+    </div>
+}

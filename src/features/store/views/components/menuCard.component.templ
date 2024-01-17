@@ -1,0 +1,95 @@
+package store
+
+import (
+    "fmt"
+    "strconv"
+
+    "github.com/IqbalLx/food-order/src/shared/entities"
+)
+
+func formatPrice(price int) string {
+	currencyStr := strconv.Itoa(price)
+	length := len(currencyStr)
+
+	var formatted string
+
+	if length <= 3 {
+		formatted = currencyStr
+	} else {
+		formatted = currencyStr[:length-3] + "." + currencyStr[length-3:]
+	}
+
+	return formatted
+}
+
+templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenu, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string) {
+    <sl-card 
+            if (menu.IsAvailable) {
+                class="ltr card-image bg-base-100 shadow-sm w-full"
+            } else { 
+                class="ltr card-image bg-base-100 shadow-sm w-full text-slate-300 disabled"
+            }
+
+            if (lastInList && isScrollable) {
+                if (isWithCategory) {
+                    hx-get={ fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d&menu_category_id=%s", store.ID, size, menu.SecondaryID, menuCategoryID) }
+                } else {
+                    hx-get={ fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d", store.ID, size, menu.SecondaryID) }
+                }
+
+                hx-trigger="intersect once"
+                hx-target="#menu-last-card"
+                hx-swap="outerHTML"
+            }
+            >
+            <img
+                slot="image"
+                src={ menu.Image }
+                alt={ menu.Name }
+
+                if (menu.IsAvailable) {
+                    class="aspect-square object-cover w-32 flex-none"
+                } else { 
+                    class="aspect-square object-cover w-32 flex-none opacity-30"
+                }
+            />
+
+            <div class="w-56 sm:w-60 h-32 md:w-64 flex-initial m-2">
+                <div class="h-full flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-row justify-between items-center w-full">
+                            <strong class="text-sm">{ menu.Name }</strong>
+
+                            if (menu.PricePromo != 0 && menu.IsAvailable) {
+                                <sl-badge variant="danger" pill>Promo</sl-badge>
+                            }
+                        </div>
+
+                        if (menu.PricePromo != 0 && menu.IsAvailable) {
+                            <div class="flex flex-row w-full gap-2">
+                                <p class="text-sm">{ formatPrice(menu.PricePromo) }</p>
+                                <s class="text-sm text-slate-300">{ formatPrice(menu.Price) }</s>
+                            </div>
+                        } else {
+                            <p class="text-sm">{ formatPrice(menu.Price) }</p>
+                        }
+                    </div>
+                    if (menu.IsAvailable) {
+                        <div class="flex flex-row justify-between items-center w-full">
+                            <p class="text-sm text-slate-500">
+                                if (menu.OrderedCount > 0) {
+                                    Dipesan { strconv.Itoa(menu.OrderedCount) } kali
+                                } else {
+                                    Jadi yang pertama cobain!
+                                }
+                            </p>
+                            
+                            <sl-button variant="default" size="small" circle>
+                                <sl-icon name="plus-lg" label="Tambah ke Keranjang" class="text-md"></sl-icon>
+                            </sl-button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </sl-card>
+}
