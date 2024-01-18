@@ -5,17 +5,17 @@ import (
 	"errors"
 
 	"github.com/IqbalLx/food-order/src/shared/entities"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type StoresWithMenus struct {
 	Store entities.StoreWithCategories
 	MenuCategories []entities.StoreMenuCategory
-	Menus []entities.StoreMenu
+	Menus []entities.StoreMenuWithQuantity
 	IsMenusScrollable bool
 }
 
-func doGetStores(ctx context.Context, db *pgx.Conn, size int, lastStoreSecondaryID int) ([]entities.StoreWithCategories, bool, error) {
+func doGetStores(ctx context.Context, db *pgxpool.Pool, size int, lastStoreSecondaryID int) ([]entities.StoreWithCategories, bool, error) {
 	stores, err := getStores(ctx, db, size, lastStoreSecondaryID); if err != nil {
 		return stores, false, err
 	}
@@ -26,7 +26,7 @@ func doGetStores(ctx context.Context, db *pgx.Conn, size int, lastStoreSecondary
 	return stores, isScrollable, nil
 }
 
-func doGetInitialStoreDetail(ctx context.Context, db *pgx.Conn, slug string, menuSize int) (StoresWithMenus, error) {
+func doGetInitialStoreDetail(ctx context.Context, db *pgxpool.Pool, cartdID string, slug string, menuSize int) (StoresWithMenus, error) {
 	var data StoresWithMenus
 
 	isExists, err := isStoreExistsBySlug(ctx, db, slug); if err != nil {
@@ -43,7 +43,7 @@ func doGetInitialStoreDetail(ctx context.Context, db *pgx.Conn, slug string, men
 	menuCategories, err := getStoreMenuCategories(ctx, db, store.ID); if err != nil {
 		return data, err
 	}
-	menus, err := getStoreMenusByStoreID(ctx, db, store.ID, menuSize, 0, false, ""); if err != nil {
+	menus, err := getStoreMenusByStoreID(ctx, db, cartdID, store.ID, menuSize, 0, false, ""); if err != nil {
 		return data, err
 	}
 	isMenusScrollable, err := isMenusScrollable(ctx, db, store.ID, menuSize, 0, false, ""); if err != nil {
@@ -58,7 +58,7 @@ func doGetInitialStoreDetail(ctx context.Context, db *pgx.Conn, slug string, men
 	return data, nil
 }
 
-func doGetMenus(ctx context.Context, db *pgx.Conn, storeID string, menuSize int, lastMenuSecondaryID int,
+func doGetMenus(ctx context.Context, db *pgxpool.Pool, cartID string, storeID string, menuSize int, lastMenuSecondaryID int,
 	isWithCategory bool, menuCategoryID string) (StoresWithMenus, error) {
 	var data StoresWithMenus
 	
@@ -73,7 +73,7 @@ func doGetMenus(ctx context.Context, db *pgx.Conn, storeID string, menuSize int,
 		return data, err
 	}
 
-	menus, err := getStoreMenusByStoreID(ctx, db, storeID, menuSize, lastMenuSecondaryID, isWithCategory, menuCategoryID); if err != nil {
+	menus, err := getStoreMenusByStoreID(ctx, db, cartID, storeID, menuSize, lastMenuSecondaryID, isWithCategory, menuCategoryID); if err != nil {
 		return data, err
 	}
 	isMenusScrollable, err := isMenusScrollable(ctx, db, storeID, menuSize, lastMenuSecondaryID, isWithCategory, menuCategoryID); if err != nil {
@@ -85,4 +85,12 @@ func doGetMenus(ctx context.Context, db *pgx.Conn, storeID string, menuSize int,
 	data.IsMenusScrollable = isMenusScrollable
 
 	return data, nil
+}
+
+func doCheckIfReadyToCheckout(ctx context.Context, db *pgxpool.Pool, cartID string) (bool, error) {
+	cartCount, err := countCartItems(ctx, db, cartID); if err != nil {
+		return false, err
+	}
+
+	return cartCount > 0, nil
 }

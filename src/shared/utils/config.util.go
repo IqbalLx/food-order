@@ -39,15 +39,17 @@ func (cfg *postgresConfig) DSNString() string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Database, cfg.SSLMode)
 }
 
-type appConfig struct {
+type AppConfig struct {
 	Database postgresConfig
+	Name string
 	Environment string
 	Address string
 }
 
-func NewAppConfig(env Env, postgresConfig *postgresConfig) *appConfig {
-	return &appConfig{
+func NewAppConfig(env Env, postgresConfig *postgresConfig) *AppConfig {
+	return &AppConfig{
 		Database: *postgresConfig,
+		Name: env.ReadWithDefaultVal("APP_NAME", "food-order"),
 		Environment: env.ReadWithDefaultVal("APP_ENV", "dev"),
 		Address: env.ReadWithDefaultVal("APP_ADDRESS", ":3000"),
 	}

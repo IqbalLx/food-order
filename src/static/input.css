@@ -4,6 +4,7 @@
 
 sl-card.ltr::part(base) {
   flex-direction: row;
+  width: 100%;
 }
 
 sl-tab::part(base) {
@@ -14,6 +15,19 @@ sl-tab::part(base) {
 sl-card::part(body) {
   padding: 0;
   margin: 0;
+}
+
+sl-card.list::part(body) {
+  width: 65%;
+  padding: 0;
+  margin: 0;
+}
+
+sl-button.plain::part(base) {
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 sl-card.disabled::part(base) {
@@ -32,6 +46,11 @@ slot.card__body {
   width: 100%;
 }
 
+sl-icon-button::part(base) {
+  padding: 0;
+  margin: 0;
+}
+
 /*
     https://github.com/tailwindlabs/tailwindcss/discussions/2394
     https://github.com/tailwindlabs/tailwindcss/pull/5732
@@ -46,4 +65,31 @@ slot.card__body {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+}
+
+@media only screen and (max-width: 375px) {
+  sl-card.list::part(body) {
+    width: 60%;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  sl-card.list::part(body) {
+    width: 53%;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.pop-out {
+  opacity: 1;
+  transition: all 200ms ease-out;
+}
+.pop-out.htmx-added {
+  opacity: 0;
+}
+.pop-out.htmx-settling {
+  opacity: 0;
 }

@@ -47,8 +47,8 @@ templ StoreHeader(store entities.StoreWithCategories) {
 }
 
 templ StoreFooter(store entities.StoreWithCategories, menuCategories []entities.StoreMenuCategory) {
-    <sl-tab-group placement="bottom" no-scroll-controls>
-        <sl-tab slot="nav" panel="all"
+    <sl-tab-group placement="bottom" dir="rtl" no-scroll-controls>        
+        <sl-tab slot="nav" panel="all" active
             hx-get={ "/stores/" + store.ID + "/menus" }
             hx-trigger="click"
             hx-target="#menu-container"
@@ -79,7 +79,7 @@ templ StoreFooter(store entities.StoreWithCategories, menuCategories []entities.
 templ Store(
         store entities.StoreWithCategories, 
         menuCategories []entities.StoreMenuCategory,
-        menus []entities.StoreMenu, 
+        menus []entities.StoreMenuWithQuantity, 
         menuSize int, 
         isMenuScrollable bool,
     ) {
@@ -107,7 +107,17 @@ templ Store(
         </div>
 
         <div class="sticky bottom-0 z-50 bg-white">
-            @StoreFooter(store, menuCategories)
+            <div class="flex flex-row overflow-x-auto no-scrollbar items-center h-12" dir="rtl" >
+                <div
+                    hx-trigger="load, cart-count-update from:body"
+                    hx-get="/stores/states/checkout"
+                    hx-target="this"
+                    hx-swap="innerHTML"
+                >
+                </div>
+
+                @StoreFooter(store, menuCategories)
+            </div>
         </div>
     </div>
 }

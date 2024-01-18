@@ -6,20 +6,24 @@ import (
 
 	components "github.com/IqbalLx/food-order/src/features/store/views/components"
 	layouts "github.com/IqbalLx/food-order/src/features/store/views/layouts"
+	"github.com/IqbalLx/food-order/src/shared/middlewares"
 	"github.com/IqbalLx/food-order/src/shared/utils"
 	sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
 	sharedLayouts "github.com/IqbalLx/food-order/src/shared/views/layouts"
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func NewStoreController(app *fiber.App) {
 	stores := app.Group("/stores")
 	stores.Get("/", getStoresHandler)
-	stores.Get("/:slug", getStoreBySlugHandler)
-	stores.Get("/:id/menus", getStoreMenusByStoreIDHandler)
+	stores.Get("/:slug", middlewares.ValidateCard, getStoreBySlugHandler)
+	stores.Get("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler)
+
+	storeStates := stores.Group("/states")
+	storeStates.Get("/checkout", middlewares.ValidateCard, getCheckoutStatehandler)
 }
 
 func getStoresHandler(c *fiber.Ctx) error {
@@ -36,12 +40,13 @@ func getStoresHandler(c *fiber.Ctx) error {
 		return err
 	}
 
-	db := utils.GetLocal[*pgx.Conn](c, "db")
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
 
 	stores, isScrollable, err := doGetStores(c.Context(), db, size, lastStoreSecondaryID); if err != nil {
 		return err
 	}
 
+	c.Set("HX-Trigger", "cart-count-update")
 	return adaptor.HTTPHandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			for i, store := range stores {
 				sharedComponents.StoreCard(store, size, i == len(stores) - 1, isScrollable).Render(c.Context(), w)
@@ -56,11 +61,14 @@ func getStoresHandler(c *fiber.Ctx) error {
 
 func getStoreBySlugHandler(c *fiber.Ctx) error {
 	storeSlug := c.Params("slug")
-
-	initialMenuSize := 5
 	
-	db := utils.GetLocal[*pgx.Conn](c, "db")
-	data, err := doGetInitialStoreDetail(c.Context(), db, storeSlug, initialMenuSize); if err != nil {
+	initialMenuSize := 5
+
+	appConfig := utils.GetLocal[*utils.AppConfig](c, "appConfig")
+	cartID := c.Cookies(appConfig.Name + "__cart")
+
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
+	data, err := doGetInitialStoreDetail(c.Context(), db, cartID, storeSlug, initialMenuSize); if err != nil {
 		return err
 	}
 
@@ -86,9 +94,12 @@ func getStoreMenusByStoreIDHandler(c *fiber.Ctx) error {
 	menuCategoryID := c.Query("menu_category_id", "")
 	isWithCategory := menuCategoryID != ""
 
-	db := utils.GetLocal[*pgx.Conn](c, "db")
+	appConfig := utils.GetLocal[*utils.AppConfig](c, "appConfig")
+	cartID := c.Cookies(appConfig.Name + "__cart")
 
-	data, err := doGetMenus(c.Context(), db, storeID, size, lastMenuSecondaryID, isWithCategory, menuCategoryID); if err != nil {
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
+
+	data, err := doGetMenus(c.Context(), db, cartID, storeID, size, lastMenuSecondaryID, isWithCategory, menuCategoryID); if err != nil {
 		return err
 	}
 
@@ -101,5 +112,24 @@ func getStoreMenusByStoreIDHandler(c *fiber.Ctx) error {
 				sharedComponents.GenericCardSkeleton("menu-last-card").Render(c.Context(), w)
 			}
 		},
+	)(c)
+}
+
+// Store States
+func getCheckoutStatehandler(c *fiber.Ctx) error {
+	appConfig := utils.GetLocal[*utils.AppConfig](c, "appConfig")
+	cartID := c.Cookies(appConfig.Name + "__cart")
+
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
+	readyToCheckout, err := doCheckIfReadyToCheckout(c.Context(), db, cartID); if err != nil {
+		return err
+	}
+
+	if !readyToCheckout {
+		return c.Status(200).SendString("")
+	}
+
+	return adaptor.HTTPHandler(
+		templ.Handler(components.CheckoutButton()),
 	)(c)
 }

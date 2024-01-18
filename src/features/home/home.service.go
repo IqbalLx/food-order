@@ -4,16 +4,26 @@ import (
 	"context"
 
 	"github.com/IqbalLx/food-order/src/shared/entities"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func doGetStores(ctx context.Context, db *pgx.Conn, size int) ([]entities.StoreWithCategories, bool, error) {
+type HomeInitialData struct {
+	Stores []entities.StoreWithCategories
+	IsStoresScrollable bool
+}
+
+func doGetHomeInitialData(ctx context.Context, db *pgxpool.Pool, size int) (HomeInitialData, error) {
+	var data HomeInitialData
+	
 	stores, err := getStores(ctx, db, size); if err != nil {
-		return stores, false, err
+		return data, err
 	}
-	isScrollable, err := isStoresScrollable(ctx, db, size); if err != nil {
-		return stores, false, err
+	isStoresScrollable, err := isStoresScrollable(ctx, db, size); if err != nil {
+		return data, err
 	}
 
-	return stores, isScrollable, nil
+	data.Stores = stores
+	data.IsStoresScrollable = isStoresScrollable
+
+	return data, nil
 }

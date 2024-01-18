@@ -5,10 +5,11 @@ import (
 
 	"github.com/IqbalLx/food-order/src/shared/entities"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/leporo/sqlf"
 )
 
-func getStores(ctx context.Context, db *pgx.Conn, size int, lastStoreSecondaryID int) ([]entities.StoreWithCategories, error) {
+func getStores(ctx context.Context, db *pgxpool.Pool, size int, lastStoreSecondaryID int) ([]entities.StoreWithCategories, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("stores as s").
@@ -43,7 +44,7 @@ func getStores(ctx context.Context, db *pgx.Conn, size int, lastStoreSecondaryID
 	return stores, nil
 }
 
-func isStoresScrollable(ctx context.Context, db *pgx.Conn, size int, lastStoreSecondaryID int) (bool, error) {
+func isStoresScrollable(ctx context.Context, db *pgxpool.Pool, size int, lastStoreSecondaryID int) (bool, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("stores as s").
@@ -68,7 +69,7 @@ func isStoresScrollable(ctx context.Context, db *pgx.Conn, size int, lastStoreSe
 	return true, nil
 }
 
-func isStoreExistsBySlug(ctx context.Context, db *pgx.Conn, slug string) (bool, error) {
+func isStoreExistsBySlug(ctx context.Context, db *pgxpool.Pool, slug string) (bool, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("stores as s").
@@ -91,7 +92,7 @@ func isStoreExistsBySlug(ctx context.Context, db *pgx.Conn, slug string) (bool, 
 	return true, nil
 }
 
-func isStoreExistsByID(ctx context.Context, db *pgx.Conn, id string) (bool, error) {
+func isStoreExistsByID(ctx context.Context, db *pgxpool.Pool, id string) (bool, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("stores as s").
@@ -114,7 +115,7 @@ func isStoreExistsByID(ctx context.Context, db *pgx.Conn, id string) (bool, erro
 	return true, nil
 }
 
-func getStoreBySlug(ctx context.Context, db *pgx.Conn, slug string) (entities.StoreWithCategories, error) {
+func getStoreBySlug(ctx context.Context, db *pgxpool.Pool, slug string) (entities.StoreWithCategories, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("stores as s").
@@ -138,7 +139,7 @@ func getStoreBySlug(ctx context.Context, db *pgx.Conn, slug string) (entities.St
 	return store, nil
 }
 
-func getStoreByID(ctx context.Context, db *pgx.Conn, id string) (entities.StoreWithCategories, error) {
+func getStoreByID(ctx context.Context, db *pgxpool.Pool, id string) (entities.StoreWithCategories, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("stores as s").
@@ -162,11 +163,17 @@ func getStoreByID(ctx context.Context, db *pgx.Conn, id string) (entities.StoreW
 	return store, nil
 }
 
-func getStoreMenusByStoreID(ctx context.Context, db *pgx.Conn, storeID string, size int, lastMenuSecondaryID int,
-	isWithCategory bool, menuCategoryID string) ([]entities.StoreMenu, error) {
+func getStoreMenusByStoreID(ctx context.Context, db *pgxpool.Pool, cartID string, storeID string, size int, lastMenuSecondaryID int,
+	isWithCategory bool, menuCategoryID string) ([]entities.StoreMenuWithQuantity, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("store_menus as sm").
+		Clause(
+			`LEFT JOIN cart_items as ci ON 
+				ci.store_menu_id = sm.id AND 
+				ci.store_id = sm.store_id AND`,
+		).
+		Expr("ci.cart_id = ?", cartID).
 		Where("sm.store_id = ?", storeID).
 		Where("sm.secondary_id > ?", lastMenuSecondaryID).
 		OrderBy("sm.secondary_id ASC").
@@ -180,7 +187,8 @@ func getStoreMenusByStoreID(ctx context.Context, db *pgx.Conn, storeID string, s
 			 sm.ordered_count,
 			 sm.price_promo,
 			 sm.is_available`,
-		)
+		).
+		Select("COALESCE(ci.quantity, 0) as quantity")
 
 	if (isWithCategory) {
 		query.
@@ -190,10 +198,10 @@ func getStoreMenusByStoreID(ctx context.Context, db *pgx.Conn, storeID string, s
 
 	sql, args := query.String(), query.Args()
 	rows, err := db.Query(ctx, sql, args...); if err != nil {
-		return []entities.StoreMenu{}, err
+		return []entities.StoreMenuWithQuantity{}, err
 	}
-	menus, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (entities.StoreMenu, error) {
-		var menu entities.StoreMenu
+	menus, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (entities.StoreMenuWithQuantity, error) {
+		var menu entities.StoreMenuWithQuantity
 		err = row.Scan(
 			&menu.ID,
 			&menu.SecondaryID,
@@ -203,6 +211,7 @@ func getStoreMenusByStoreID(ctx context.Context, db *pgx.Conn, storeID string, s
 			&menu.OrderedCount,
 			&menu.PricePromo,
 			&menu.IsAvailable,
+			&menu.Quantity,
 		)
 		if err != nil {
 			return menu, err
@@ -212,13 +221,13 @@ func getStoreMenusByStoreID(ctx context.Context, db *pgx.Conn, storeID string, s
 	})
 
 	if err != nil{
-		return []entities.StoreMenu{}, err
+		return []entities.StoreMenuWithQuantity{}, err
 	}
 
 	return menus, nil
 }
 
-func isMenusScrollable(ctx context.Context, db *pgx.Conn, storeID string, size int, lastMenuSecondaryID int,
+func isMenusScrollable(ctx context.Context, db *pgxpool.Pool, storeID string, size int, lastMenuSecondaryID int,
 	isWithCategory bool, menuCategoryID string) (bool, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
@@ -251,7 +260,7 @@ func isMenusScrollable(ctx context.Context, db *pgx.Conn, storeID string, size i
 	return true, nil
 }
 
-func getStoreMenuCategories(ctx context.Context, db *pgx.Conn, storeID string) ([]entities.StoreMenuCategory, error) {
+func getStoreMenuCategories(ctx context.Context, db *pgxpool.Pool, storeID string) ([]entities.StoreMenuCategory, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("store_menu_categories as smc").
@@ -281,4 +290,22 @@ func getStoreMenuCategories(ctx context.Context, db *pgx.Conn, storeID string) (
 	}
 
 	return storeMenuCategories, nil
+}
+
+func countCartItems(ctx context.Context, db *pgxpool.Pool, cartID string) (int, error) {
+	sqlf.SetDialect(sqlf.PostgreSQL)
+	query := sqlf.
+		From("cart_items").
+		Where("cart_id = ?", cartID).
+		Select("COALESCE(SUM(quantity), 0) as quantity")
+	
+	sql, args := query.String(), query.Args()
+	row := db.QueryRow(ctx, sql, args...)
+
+	var quantity int
+	err := row.Scan(&quantity); if err != nil {
+		return quantity, err
+	}
+
+	return quantity, nil
 }

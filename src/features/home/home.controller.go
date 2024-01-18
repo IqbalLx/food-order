@@ -7,7 +7,7 @@ import (
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func NewHomeController(app *fiber.App) {
@@ -15,16 +15,23 @@ func NewHomeController(app *fiber.App) {
 }
 
 func homeHandler(c *fiber.Ctx) error {
-	db := utils.GetLocal[*pgx.Conn](c, "db")
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
 
 	initialSize := 5
-	stores, isScrollable, err := doGetStores(c.Context(), db, initialSize); if err != nil {
+	data, err := doGetHomeInitialData(c.Context(), db, initialSize); if err != nil {
 		return err
 	}
 
 	return adaptor.HTTPHandler(
 		templ.Handler(
-			sharedLayouts.Root(layouts.Home(stores, initialSize, len(stores), isScrollable)),
+			sharedLayouts.Root(
+				layouts.Home(
+					data.Stores, 
+					initialSize, 
+					len(data.Stores), 
+					data.IsStoresScrollable,
+				),
+			),
 		),
 	)(c)
 

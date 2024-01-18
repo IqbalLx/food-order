@@ -5,10 +5,11 @@ import (
 
 	"github.com/IqbalLx/food-order/src/shared/entities"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/leporo/sqlf"
 )
 
-func getStores(ctx context.Context, db *pgx.Conn, size int) ([]entities.StoreWithCategories, error) {
+func getStores(ctx context.Context, db *pgxpool.Pool, size int) ([]entities.StoreWithCategories, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("stores as s").
@@ -42,7 +43,7 @@ func getStores(ctx context.Context, db *pgx.Conn, size int) ([]entities.StoreWit
 	return stores, nil
 }
 
-func isStoresScrollable(ctx context.Context, db *pgx.Conn, size int) (bool, error) {
+func isStoresScrollable(ctx context.Context, db *pgxpool.Pool, size int) (bool, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("stores as s").

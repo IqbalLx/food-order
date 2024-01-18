@@ -1,0 +1,97 @@
+package views
+
+import (
+    "strconv"
+)
+
+script updateQuantity(menuID string, step int, isIncreasing bool) {
+    const inputElem = document.getElementById(`quantity-input-${menuID}`);
+    const displayElem = document.getElementById(`quantity-display-${menuID}`);
+
+    const quantity = parseInt(inputElem.value);
+    const newQuantity = isIncreasing ? quantity + step : Math.max(0, quantity - step);
+
+    inputElem.value = newQuantity.toString();
+    displayElem.innerText = newQuantity.toString()
+}
+
+templ MenuCounter(menuID string, quantity int) {
+    <div class="flex flex-row items-center rounded-md pop-out" id={ "menu-counter-" + menuID }>
+        <sl-button 
+            size="small"
+            class="text-sm m-0 p-0"
+            circle
+
+            onclick={ updateQuantity(menuID, 1, false) }
+            hx-put="/carts"
+            hx-trigger="click delay:300ms"
+            hx-include={ "#form-input-" + menuID }
+            hx-target={ "#menu-counter-" + menuID }
+            hx-swap="outerHTML"
+            hx-indicator=".htmx-indicator"
+        >
+            <sl-icon name="dash" label="Subtract quantity" class="text-md"></sl-icon>
+        </sl-button>
+
+        <form id={ "form-input-" + menuID } style="display: none;">
+            <input 
+            id={ "quantity-input-" + menuID }  
+            name="quantity" value={ strconv.Itoa(quantity) }
+            ></input>
+            <input
+            name="menu_id" value={ menuID } 
+            ></input>
+        </form>
+
+        <p 
+            class="mx-2 text-sm" 
+            id={ "quantity-display-" + menuID }
+        >
+          {  strconv.Itoa(quantity) }
+        </p>
+
+        <sl-button 
+            size="small"
+            class="text-sm m-0 p-0"
+            circle
+
+            onclick={ updateQuantity(menuID, 1, true) }
+            hx-put="/carts"
+            hx-trigger="click delay:300ms"
+            hx-include={ "#form-input-" + menuID }
+            hx-target={ "#menu-counter-" + menuID }
+            hx-swap="outerHTML"
+            hx-indicator=".htmx-indicator"
+        >
+            <sl-icon name="plus" label="Add quantity" class="text-md"></sl-icon>
+        </sl-button>
+    </div>
+}
+
+templ MenuInitialPlusButton(menuID string) {
+    <div class="pop-out" id={ "menu-counter-" + menuID }>
+        <form id={ "form-input-" + menuID } style="display: none;">
+            <input 
+            id={ "quantity-input-" + menuID }  
+            name="quantity" value="1"
+            ></input>
+            <input
+            name="menu_id" value={ menuID } 
+            ></input>
+        </form>
+
+        <sl-button 
+            variant="default" 
+            size="small"
+            circle
+            hx-trigger="click"
+            hx-put="/carts"
+            hx-include={ "#form-input-" + menuID }
+            hx-target={ "#menu-counter-" + menuID }
+            hx-swap="outerHTML"
+            hx-indicator=".htmx-indicator"
+        >
+            <sl-icon name="plus-lg" label="Tambah ke Keranjang" class="text-md"></sl-icon>
+        </sl-button>
+    </div>
+}

@@ -5,6 +5,7 @@ import (
     "strconv"
 
     "github.com/IqbalLx/food-order/src/shared/entities"
+    sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
 )
 
 func formatPrice(price int) string {
@@ -22,12 +23,12 @@ func formatPrice(price int) string {
 	return formatted
 }
 
-templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenu, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string) {
+templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQuantity, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string) {
     <sl-card 
             if (menu.IsAvailable) {
-                class="ltr card-image bg-base-100 shadow-sm w-full"
+                class="ltr card-image bg-base-100 shadow-sm w-full list"
             } else { 
-                class="ltr card-image bg-base-100 shadow-sm w-full text-slate-300 disabled"
+                class="ltr card-image bg-base-100 shadow-sm w-full text-slate-300 list disabled"
             }
 
             if (lastInList && isScrollable) {
@@ -54,7 +55,7 @@ templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenu, size
                 }
             />
 
-            <div class="w-56 sm:w-60 h-32 md:w-64 flex-initial m-2">
+            <div class="w-full h-32 flex-initial m-2">
                 <div class="h-full flex flex-col justify-between">
                     <div>
                         <div class="flex flex-row justify-between items-center w-full">
@@ -75,18 +76,20 @@ templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenu, size
                         }
                     </div>
                     if (menu.IsAvailable) {
-                        <div class="flex flex-row justify-between items-center w-full">
-                            <p class="text-sm text-slate-500">
+                        <div class="flex flex-row justify-between items-end w-full">
+                            <p class="text-sm text-slate-500 flex-none mb-1">
                                 if (menu.OrderedCount > 0) {
                                     Dipesan { strconv.Itoa(menu.OrderedCount) } kali
                                 } else {
                                     Jadi yang pertama cobain!
                                 }
                             </p>
-                            
-                            <sl-button variant="default" size="small" circle>
-                                <sl-icon name="plus-lg" label="Tambah ke Keranjang" class="text-md"></sl-icon>
-                            </sl-button>
+
+                            if menu.Quantity != 0 {
+                                @sharedComponents.MenuCounter(menu.ID, menu.Quantity)
+                            } else {
+                                @sharedComponents.MenuInitialPlusButton(menu.ID)
+                            }
                         </div>
                     }
                 </div>

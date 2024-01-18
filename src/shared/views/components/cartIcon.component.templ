@@ -1,0 +1,25 @@
+package views
+
+import (
+    "strconv"
+)
+
+templ CartIcon(cartCount int) {
+    <sl-button 
+        variant="default" 
+        size="medium" 
+        circle
+
+        hx-trigger="cart-count-update from:body"
+        hx-get="/carts/count"
+        hx-target="this"
+        hx-swap="outerHTML"
+        hx-indicator=".htmx-indicator"
+    >
+        <sl-icon name="cart" label="Keranjang" class="text-md"></sl-icon>
+        
+        if cartCount > 0 {
+            <sl-badge variant="warning" class="pop-out" pill pulse>{ strconv.Itoa(cartCount) }</sl-badge>
+        }
+    </sl-button>
+}

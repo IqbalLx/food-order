@@ -12,6 +12,8 @@ import "bytes"
 
 import (
 	"fmt"
+
+	sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
 )
 
 func Searchbar(storeName string) templ.Component {
@@ -27,15 +29,23 @@ func Searchbar(storeName string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full pt-4 pb-2 shadow-sm\"><sl-input placeholder=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-row items-center w-full justify-start justify-items-center gap-2 py-4 shadow-sm\"><sl-input placeholder=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("Cari menu %s disini ...", storeName)))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("Cari menu %s ...", storeName)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" size=\"small\" class=\"bg-white text-sm\" pill clearable><sl-icon name=\"search\" slot=\"prefix\"></sl-icon></sl-input></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" size=\"small\" class=\"bg-white text-sm w-5/6\" pill clearable><sl-icon name=\"search\" slot=\"prefix\"></sl-icon></sl-input><div hx-trigger=\"load\" hx-get=\"/carts/count\" hx-target=\"this\" hx-swap=\"outerHTML\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = sharedComponents.CartIcon(0).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

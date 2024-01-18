@@ -39,7 +39,7 @@ func StoreCard(store entities.StoreWithCategories, size int, lastInList bool, is
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\"><sl-card class=\"ltr card-image bg-base-100 shadow-sm w-full\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\"><sl-card class=\"ltr list card-image bg-base-100 shadow-sm w-full\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +65,7 @@ func StoreCard(store entities.StoreWithCategories, size int, lastInList bool, is
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"Store Image\" class=\"aspect-square object-cover w-32 flex-none\"><div class=\"w-56 sm:w-60 h-32 md:w-64 flex-initial mx-2\"><div class=\"h-full flex flex-col justify-evenly\"><div class=\"mb-1\"><div class=\"flex flex-row justify-between items-center w-full\"><strong class=\"text-sm\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"Store Image\" class=\"aspect-square object-cover w-32 flex-none\"><div class=\"w-full h-32 flex-initial mx-2\"><div class=\"h-full flex flex-col justify-evenly\"><div class=\"mb-1\"><div class=\"flex flex-row justify-between items-center w-full\"><strong class=\"text-sm\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

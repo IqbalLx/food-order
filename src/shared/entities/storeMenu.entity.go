@@ -12,6 +12,11 @@ type StoreMenu struct {
 	IsAvailable bool
 }
 
+type StoreMenuWithQuantity struct {
+	StoreMenu
+	Quantity int
+}
+
 type StoreMenuWithTimestamp struct {
 	StoreMenu
 	TimestampField

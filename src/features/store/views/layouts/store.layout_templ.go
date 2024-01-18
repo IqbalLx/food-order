@@ -156,13 +156,7 @@ func StoreHeader(store entities.StoreWithCategories) templ.Component {
 	})
 }
 
-func Store(
-	store entities.StoreWithCategories,
-	menuCategories []entities.StoreMenuCategory,
-	menus []entities.StoreMenu,
-	menuSize int,
-	isMenuScrollable bool,
-) templ.Component {
+func StoreFooter(store entities.StoreWithCategories, menuCategories []entities.StoreMenuCategory) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -175,39 +169,7 @@ func Store(
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col h-screen justify-between overflow-y-auto no-scrollbar\"><div><div class=\"sticky top-0 bg-white z-50\"><div class=\"px-2\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = components.Searchbar(store.Name).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><sl-progress-bar style=\"--height: 4px;\" class=\"htmx-indicator w-full\" indeterminate></sl-progress-bar></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = StoreHeader(store).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"menu-container\" class=\"flex flex-col gap-y-1 px-2 mb-4\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		for i, menu := range menus {
-			templ_7745c5c3_Err = components.MenuCard(store, menu, menuSize, i == menuSize-1, isMenuScrollable, false, "").Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		if isMenuScrollable {
-			templ_7745c5c3_Err = sharedComponents.GenericCardSkeleton("menu-last-card").Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"sticky bottom-0 z-50 bg-white\"><sl-tab-group placement=\"bottom\" no-scroll-controls><sl-tab slot=\"nav\" panel=\"all\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-tab-group placement=\"bottom\" dir=\"rtl\" no-scroll-controls><sl-tab slot=\"nav\" panel=\"all\" active hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -252,7 +214,7 @@ func Store(
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(menuCategory.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/layouts/store.layout.templ`, Line: 101, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/layouts/store.layout.templ`, Line: 71, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -263,7 +225,77 @@ func Store(
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</sl-tab-group></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</sl-tab-group>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func Store(
+	store entities.StoreWithCategories,
+	menuCategories []entities.StoreMenuCategory,
+	menus []entities.StoreMenuWithQuantity,
+	menuSize int,
+	isMenuScrollable bool,
+) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col h-screen justify-between overflow-y-auto no-scrollbar\"><div><div class=\"sticky top-0 bg-white z-50\"><div class=\"px-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = components.Searchbar(store.Name).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><sl-progress-bar style=\"--height: 4px;\" class=\"htmx-indicator w-full\" indeterminate></sl-progress-bar></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = StoreHeader(store).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"menu-container\" class=\"flex flex-col gap-y-1 px-2 mb-4\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for i, menu := range menus {
+			templ_7745c5c3_Err = components.MenuCard(store, menu, menuSize, i == menuSize-1, isMenuScrollable, false, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if isMenuScrollable {
+			templ_7745c5c3_Err = sharedComponents.GenericCardSkeleton("menu-last-card").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"sticky bottom-0 z-50 bg-white\"><div class=\"flex flex-row overflow-x-auto no-scrollbar items-center h-12\" dir=\"rtl\"><div hx-trigger=\"load, cart-count-update from:body\" hx-get=\"/stores/states/checkout\" hx-target=\"this\" hx-swap=\"innerHTML\"></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = StoreFooter(store, menuCategories).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
