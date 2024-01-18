@@ -33,7 +33,7 @@ func formatPrice(price int) string {
 	return formatted
 }
 
-func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQuantity, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string) templ.Component {
+func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQuantity, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string, isWithSearchQuery bool, searchQuery string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -62,12 +62,48 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 			}
 		}
 		if lastInList && isScrollable {
-			if isWithCategory {
+			if isWithCategory && isWithSearchQuery {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" hx-get=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d&menu_category_id=%s&query=%s", store.ID, size, menu.SecondaryID, menuCategoryID, searchQuery)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" else")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if isWithCategory && !isWithSearchQuery {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d&menu_category_id=%s", store.ID, size, menu.SecondaryID, menuCategoryID)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" else")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if !isWithCategory && isWithSearchQuery {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" hx-get=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d&query=%s", store.ID, size, menu.SecondaryID, searchQuery)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -132,7 +168,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(menu.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 61, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 65, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -169,7 +205,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(formatPrice(menu.PricePromo))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 70, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 74, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -182,7 +218,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(formatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 71, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 75, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -200,7 +236,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(formatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 74, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 78, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -229,7 +265,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(menu.OrderedCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 81, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 85, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {

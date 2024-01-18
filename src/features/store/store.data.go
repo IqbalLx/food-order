@@ -164,7 +164,7 @@ func getStoreByID(ctx context.Context, db *pgxpool.Pool, id string) (entities.St
 }
 
 func getStoreMenusByStoreID(ctx context.Context, db *pgxpool.Pool, cartID string, storeID string, size int, lastMenuSecondaryID int,
-	isWithCategory bool, menuCategoryID string) ([]entities.StoreMenuWithQuantity, error) {
+	isWithCategory bool, menuCategoryID string, withSearchQuery bool, searchQuery string) ([]entities.StoreMenuWithQuantity, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("store_menus as sm").
@@ -194,6 +194,11 @@ func getStoreMenusByStoreID(ctx context.Context, db *pgxpool.Pool, cartID string
 		query.
 			Join("store_menu_category_items as smci", "smci.store_menu_id = sm.id").
 			Where("smci.store_menu_category_id = ?", menuCategoryID)
+	}
+
+	if (withSearchQuery) {
+		query.
+			Where("sm.name ILIKE ?", "%" + searchQuery + "%")
 	}
 
 	sql, args := query.String(), query.Args()
@@ -228,7 +233,7 @@ func getStoreMenusByStoreID(ctx context.Context, db *pgxpool.Pool, cartID string
 }
 
 func isMenusScrollable(ctx context.Context, db *pgxpool.Pool, storeID string, size int, lastMenuSecondaryID int,
-	isWithCategory bool, menuCategoryID string) (bool, error) {
+	isWithCategory bool, menuCategoryID string, withSearchQuery bool, searchQuery string) (bool, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
 		From("store_menus as sm").
@@ -243,6 +248,11 @@ func isMenusScrollable(ctx context.Context, db *pgxpool.Pool, storeID string, si
 		query.
 			Join("store_menu_category_items as smci", "smci.store_menu_id = sm.id").
 			Where("smci.store_menu_category_id = ?", menuCategoryID)
+	}
+
+	if (withSearchQuery) {
+		query.
+			Where("sm.name ILIKE ?", "%" + searchQuery + "%")
 	}
 
 	sql, args := query.String(), query.Args()
@@ -260,10 +270,27 @@ func isMenusScrollable(ctx context.Context, db *pgxpool.Pool, storeID string, si
 	return true, nil
 }
 
-func getStoreMenuCategories(ctx context.Context, db *pgxpool.Pool, storeID string) ([]entities.StoreMenuCategory, error) {
+func getStoreMenuCategories(ctx context.Context, db *pgxpool.Pool, storeID string, 
+	withSearchQuery bool, searchQuery string) ([]entities.StoreMenuCategory, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
-		From("store_menu_categories as smc").
+		From("store_menu_categories as smc")
+
+	if (withSearchQuery) {
+		query.
+			Clause(
+				`INNER JOIN store_menu_category_items as smci ON 
+					smci.store_menu_category_id = smc.id AND`,
+			).
+			Expr("smci.store_id = ?", storeID).
+			Clause(
+				`INNER JOIN store_menus as sm ON 
+					sm.id = smci.store_menu_id AND`,
+			).
+			Expr("sm.name ILIKE ?", "%" + searchQuery + "%")
+	}
+
+	query.
 		Where("smc.store_id = ?", storeID).
 		OrderBy("smc.name ASC").
 		Select("smc.id, smc.name")

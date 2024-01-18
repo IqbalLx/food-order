@@ -85,6 +85,22 @@ func upsertMenuToCart(ctx context.Context, db *pgxpool.Pool, cartID string,
 	return finalQuantity, nil
 }
 
+func deleteMenuFromCart(ctx context.Context, db *pgxpool.Pool, cartID string, menu entities.StoreMenu) error {
+	sqlf.SetDialect(sqlf.PostgreSQL)
+	query := sqlf.
+		DeleteFrom("cart_items").
+		Where("cart_id = ?", cartID).
+		Where("store_id = ?", menu.StoreID).
+		Where("store_menu_id = ?", menu.ID)
+	
+	sql, args := query.String(), query.Args()
+	_, err := db.Exec(ctx, sql, args...); if err != nil {
+		return err
+	}
+	
+	return nil
+}
+
 func countCartItems(ctx context.Context, db *pgxpool.Pool, cartID string) (int, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.

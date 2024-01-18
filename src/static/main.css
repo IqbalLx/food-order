@@ -1364,7 +1364,7 @@ sl-icon-button::part(base) {
     https://github.com/tailwindlabs/tailwindcss/pull/5732
 */
 
-@media only screen and (max-width: 375px) {
+@media only screen and (max-width: 400px) {
   sl-card.list::part(body) {
     width: 60%;
     padding: 0;

@@ -169,7 +169,15 @@ func StoreFooter(store entities.StoreWithCategories, menuCategories []entities.S
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-tab-group placement=\"bottom\" dir=\"rtl\" no-scroll-controls><sl-tab slot=\"nav\" panel=\"all\" active hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-tab-group placement=\"bottom\" dir=\"rtl\" no-scroll-controls hx-trigger=\"store-menu-category-update from:body\" hx-post=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("/stores/" + store.ID + "/menus/categories"))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"this\" hx-swap=\"outerHTML\" hx-indicator=\".htmx-indicator\" hx-include=\"#store-menu-searchbar\" hx-disinherit=\"*\"><sl-tab slot=\"nav\" panel=\"all\" active hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -177,7 +185,7 @@ func StoreFooter(store entities.StoreWithCategories, menuCategories []entities.S
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#menu-container\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\"><p class=\"text-xs m-2 my-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#menu-container\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\" hx-include=\"#store-menu-searchbar\"><p class=\"text-xs m-2 my-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -207,14 +215,14 @@ func StoreFooter(store entities.StoreWithCategories, menuCategories []entities.S
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#menu-container\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\"><p class=\"text-xs m-2 my-4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-target=\"#menu-container\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\" hx-include=\"#store-menu-searchbar\"><p class=\"text-xs m-2 my-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(menuCategory.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/layouts/store.layout.templ`, Line: 71, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/layouts/store.layout.templ`, Line: 81, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -242,6 +250,8 @@ func Store(
 	menus []entities.StoreMenuWithQuantity,
 	menuSize int,
 	isMenuScrollable bool,
+	isWithSearchQuery bool,
+	searchQuery string,
 ) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -259,7 +269,7 @@ func Store(
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.Searchbar(store.Name).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Searchbar(store, isWithSearchQuery, searchQuery).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -276,7 +286,7 @@ func Store(
 			return templ_7745c5c3_Err
 		}
 		for i, menu := range menus {
-			templ_7745c5c3_Err = components.MenuCard(store, menu, menuSize, i == menuSize-1, isMenuScrollable, false, "").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.MenuCard(store, menu, menuSize, i == menuSize-1, isMenuScrollable, false, "", isWithSearchQuery, searchQuery).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -4,11 +4,33 @@ import (
 	"fmt"
 
     sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
+	"github.com/IqbalLx/food-order/src/shared/entities"
 )
 
-templ Searchbar(storeName string) {
+templ Searchbar(store entities.StoreWithCategories, isWithSearchQuery bool, searchQuery string) {
     <div class="flex flex-row items-center w-full justify-start justify-items-center gap-2 py-4 shadow-sm">
-        <sl-input placeholder={ fmt.Sprintf("Cari menu %s ...", storeName) } size="small" class="bg-white text-sm w-5/6" pill clearable>
+        <sl-input 
+            id="store-menu-searchbar"
+
+            if (isWithSearchQuery) {
+                placeholder={ searchQuery }
+                value={ searchQuery }
+            } else {
+                placeholder={ fmt.Sprintf("Cari menu %s ...", store.Name) }
+                value=""
+            }
+            size="small" 
+            class="bg-white text-sm w-5/6"
+            type="search"
+            name="query"
+            pill clearable
+
+            hx-post={ fmt.Sprintf("/stores/%s/menus", store.ID) }
+            hx-trigger="sl-input from:body delay:200ms"
+            hx-indicator=".htmx-indicator"
+            hx-target="#menu-container"
+            hx-swap="innerHTML"
+        >
             <sl-icon name="search" slot="prefix"></sl-icon>
         </sl-input>
 

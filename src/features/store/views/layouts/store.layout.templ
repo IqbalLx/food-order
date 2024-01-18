@@ -47,13 +47,22 @@ templ StoreHeader(store entities.StoreWithCategories) {
 }
 
 templ StoreFooter(store entities.StoreWithCategories, menuCategories []entities.StoreMenuCategory) {
-    <sl-tab-group placement="bottom" dir="rtl" no-scroll-controls>        
+    <sl-tab-group placement="bottom" dir="rtl" no-scroll-controls
+        hx-trigger="store-menu-category-update from:body"
+        hx-post={ "/stores/" + store.ID + "/menus/categories" }
+        hx-target="this"
+        hx-swap="outerHTML"
+        hx-indicator=".htmx-indicator"
+        hx-include="#store-menu-searchbar"
+        hx-disinherit="*"
+    > 
         <sl-tab slot="nav" panel="all" active
             hx-get={ "/stores/" + store.ID + "/menus" }
             hx-trigger="click"
             hx-target="#menu-container"
             hx-swap="innerHTML"
             hx-indicator=".htmx-indicator"
+            hx-include="#store-menu-searchbar"
         >
             <p class="text-xs m-2 my-4">
                 Semua Menu
@@ -67,6 +76,7 @@ templ StoreFooter(store entities.StoreWithCategories, menuCategories []entities.
                 hx-target="#menu-container"
                 hx-swap="innerHTML"
                 hx-indicator=".htmx-indicator"
+                hx-include="#store-menu-searchbar"
             >
                 <p class="text-xs m-2 my-4">
                     { menuCategory.Name }
@@ -82,12 +92,14 @@ templ Store(
         menus []entities.StoreMenuWithQuantity, 
         menuSize int, 
         isMenuScrollable bool,
+        isWithSearchQuery bool,
+        searchQuery string,
     ) {
     <div class="flex flex-col h-screen justify-between overflow-y-auto no-scrollbar">
         <div>
             <div class="sticky top-0 bg-white z-50">
                 <div class="px-2">
-                    @components.Searchbar(store.Name)
+                    @components.Searchbar(store, isWithSearchQuery, searchQuery)
                 </div>
                 <sl-progress-bar style="--height: 4px;" class="htmx-indicator w-full" indeterminate></sl-progress-bar>
             </div>
@@ -97,7 +109,7 @@ templ Store(
             <div id="menu-container" class="flex flex-col gap-y-1 px-2 mb-4"
             >
                 for i, menu := range menus {
-                    @components.MenuCard(store, menu, menuSize, i == menuSize - 1, isMenuScrollable, false, "")
+                    @components.MenuCard(store, menu, menuSize, i == menuSize - 1, isMenuScrollable, false, "", isWithSearchQuery, searchQuery)
                 }
 
                 if (isMenuScrollable) {

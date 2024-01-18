@@ -26,7 +26,8 @@ func doGetStores(ctx context.Context, db *pgxpool.Pool, size int, lastStoreSecon
 	return stores, isScrollable, nil
 }
 
-func doGetInitialStoreDetail(ctx context.Context, db *pgxpool.Pool, cartdID string, slug string, menuSize int) (StoresWithMenus, error) {
+func doGetInitialStoreDetail(ctx context.Context, db *pgxpool.Pool, cartdID string, slug string, menuSize int,
+	isWithSearchQuery bool, searchQuery string) (StoresWithMenus, error) {
 	var data StoresWithMenus
 
 	isExists, err := isStoreExistsBySlug(ctx, db, slug); if err != nil {
@@ -40,13 +41,13 @@ func doGetInitialStoreDetail(ctx context.Context, db *pgxpool.Pool, cartdID stri
 	store, err := getStoreBySlug(ctx, db, slug); if err != nil {
 		return data, err
 	}
-	menuCategories, err := getStoreMenuCategories(ctx, db, store.ID); if err != nil {
+	menuCategories, err := getStoreMenuCategories(ctx, db, store.ID, isWithSearchQuery, searchQuery); if err != nil {
 		return data, err
 	}
-	menus, err := getStoreMenusByStoreID(ctx, db, cartdID, store.ID, menuSize, 0, false, ""); if err != nil {
+	menus, err := getStoreMenusByStoreID(ctx, db, cartdID, store.ID, menuSize, 0, false, "", isWithSearchQuery, searchQuery); if err != nil {
 		return data, err
 	}
-	isMenusScrollable, err := isMenusScrollable(ctx, db, store.ID, menuSize, 0, false, ""); if err != nil {
+	isMenusScrollable, err := isMenusScrollable(ctx, db, store.ID, menuSize, 0, false, "", isWithSearchQuery, searchQuery); if err != nil {
 		return data, err
 	}
 
@@ -59,7 +60,7 @@ func doGetInitialStoreDetail(ctx context.Context, db *pgxpool.Pool, cartdID stri
 }
 
 func doGetMenus(ctx context.Context, db *pgxpool.Pool, cartID string, storeID string, menuSize int, lastMenuSecondaryID int,
-	isWithCategory bool, menuCategoryID string) (StoresWithMenus, error) {
+	isWithCategory bool, menuCategoryID string, isWithSearchQuery bool, searchQuery string) (StoresWithMenus, error) {
 	var data StoresWithMenus
 	
 	isStoreExists, err := isStoreExistsByID(ctx, db, storeID); if err != nil {
@@ -73,10 +74,12 @@ func doGetMenus(ctx context.Context, db *pgxpool.Pool, cartID string, storeID st
 		return data, err
 	}
 
-	menus, err := getStoreMenusByStoreID(ctx, db, cartID, storeID, menuSize, lastMenuSecondaryID, isWithCategory, menuCategoryID); if err != nil {
+	menus, err := getStoreMenusByStoreID(ctx, db, cartID, storeID, menuSize, lastMenuSecondaryID, isWithCategory, 
+		menuCategoryID, isWithSearchQuery, searchQuery); if err != nil {
 		return data, err
 	}
-	isMenusScrollable, err := isMenusScrollable(ctx, db, storeID, menuSize, lastMenuSecondaryID, isWithCategory, menuCategoryID); if err != nil {
+	isMenusScrollable, err := isMenusScrollable(ctx, db, storeID, menuSize, lastMenuSecondaryID, isWithCategory, 
+		menuCategoryID, isWithSearchQuery, searchQuery); if err != nil {
 		return data, err
 	}
 
@@ -93,4 +96,19 @@ func doCheckIfReadyToCheckout(ctx context.Context, db *pgxpool.Pool, cartID stri
 	}
 
 	return cartCount > 0, nil
+}
+
+func doGetMenuCategories(ctx context.Context, db *pgxpool.Pool, storeID string, isWithSearchQuery bool, searchQuery string) (StoresWithMenus, error) {
+	var data StoresWithMenus
+	store, err := getStoreByID(ctx, db, storeID); if err != nil {
+		return data, err
+	}
+	menuCategories, err := getStoreMenuCategories(ctx, db, storeID, isWithSearchQuery, searchQuery); if err != nil {
+		return data, err
+	}
+
+	data.Store = store
+	data.MenuCategories = menuCategories
+
+	return data, nil
 }

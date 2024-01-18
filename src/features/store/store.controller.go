@@ -21,7 +21,12 @@ func NewStoreController(app *fiber.App) {
 	stores.Get("/", getStoresHandler)
 	stores.Get("/:slug", middlewares.ValidateCard, getStoreBySlugHandler)
 	stores.Get("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler)
+	
+	// POST used to get FormData required for searching
+	stores.Post("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler) 
+	stores.Post("/:id/menus/categories", getMenuCategorieshandler)
 
+	// states
 	storeStates := stores.Group("/states")
 	storeStates.Get("/checkout", middlewares.ValidateCard, getCheckoutStatehandler)
 }
@@ -68,14 +73,22 @@ func getStoreBySlugHandler(c *fiber.Ctx) error {
 	cartID := c.Cookies(appConfig.Name + "__cart")
 
 	db := utils.GetLocal[*pgxpool.Pool](c, "db")
-	data, err := doGetInitialStoreDetail(c.Context(), db, cartID, storeSlug, initialMenuSize); if err != nil {
+
+	searchQuery := c.Query("q", "")
+	isWithSearchQuery := searchQuery != ""
+
+	data, err := doGetInitialStoreDetail(c.Context(), db, cartID, storeSlug, initialMenuSize, isWithSearchQuery, searchQuery); if err != nil {
 		return err
 	}
 
 	return adaptor.HTTPHandler(
 		templ.Handler(
 			sharedLayouts.RootWithTitle(
-				layouts.Store(data.Store, data.MenuCategories, data.Menus, initialMenuSize, data.IsMenusScrollable), 
+				layouts.Store(
+					data.Store, data.MenuCategories, data.Menus, 
+					initialMenuSize, data.IsMenusScrollable,
+					isWithSearchQuery, searchQuery,
+					), 
 				data.Store.Name,
 			),
 		),
@@ -83,12 +96,31 @@ func getStoreBySlugHandler(c *fiber.Ctx) error {
 }
 
 func getStoreMenusByStoreIDHandler(c *fiber.Ctx) error {
+	// if not from HTMX redirect to home
+	fromHTMX := c.Get("HX-Request", "false")
+	if (fromHTMX == "false") {
+		return c.Redirect("/")
+	}
+
 	storeID := c.Params("id")
 	size, err := strconv.Atoi(c.Query("size", "5")); if err != nil {
 		return err
 	}
 	lastMenuSecondaryID, err := strconv.Atoi(c.Query("last_menu_secondary_id", "0")); if err != nil {
 		return err
+	}
+
+	searchQuery := ""
+	isWithSearchQuery := false
+
+	if c.Route().Method == "POST" {
+		searchQuery = c.FormValue("query", "")
+		isWithSearchQuery = searchQuery != ""
+
+		c.Set("HX-Trigger", "store-menu-category-update")
+	} else if c.Route().Method == "GET" {
+		searchQuery = c.Query("query", "")
+		isWithSearchQuery = searchQuery != ""
 	}
 
 	menuCategoryID := c.Query("menu_category_id", "")
@@ -99,19 +131,45 @@ func getStoreMenusByStoreIDHandler(c *fiber.Ctx) error {
 
 	db := utils.GetLocal[*pgxpool.Pool](c, "db")
 
-	data, err := doGetMenus(c.Context(), db, cartID, storeID, size, lastMenuSecondaryID, isWithCategory, menuCategoryID); if err != nil {
+	data, err := doGetMenus(c.Context(), db, cartID, storeID, size, lastMenuSecondaryID, isWithCategory, menuCategoryID, 
+	isWithSearchQuery, searchQuery); if err != nil {
 		return err
 	}
 
 	return adaptor.HTTPHandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			for i, menu := range data.Menus {
-				components.MenuCard(data.Store, menu, size, i == len(data.Menus) - 1, data.IsMenusScrollable, isWithCategory, menuCategoryID).Render(c.Context(), w)
+				components.MenuCard(data.Store, menu, size, i == len(data.Menus) - 1, data.IsMenusScrollable, isWithCategory, 
+				menuCategoryID, isWithSearchQuery, searchQuery).Render(c.Context(), w)
 			}
 
 			if data.IsMenusScrollable {
 				sharedComponents.GenericCardSkeleton("menu-last-card").Render(c.Context(), w)
 			}
 		},
+	)(c)
+}
+
+func getMenuCategorieshandler(c *fiber.Ctx) error {
+	// if not from HTMX redirect to home
+	fromHTMX := c.Get("HX-Request", "false")
+	if (fromHTMX == "false") {
+		return c.Redirect("/")
+	}
+
+	storeID := c.Params("id")
+	searchQuery := c.FormValue("query", "")
+	isWithSearchQuery := searchQuery != ""
+
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
+
+	data, err := doGetMenuCategories(c.Context(), db, storeID, isWithSearchQuery, searchQuery); if err != nil {
+		return err
+	}
+
+	return adaptor.HTTPHandler(
+		templ.Handler(
+			layouts.StoreFooter(data.Store, data.MenuCategories),
+		),
 	)(c)
 }
 

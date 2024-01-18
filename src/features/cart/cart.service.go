@@ -19,6 +19,11 @@ func doUpsertMenuToCart(ctx context.Context, db *pgxpool.Pool, cartID string, me
 		return 0, err
 	}
 
+	if (quantity == 0) {
+		err = deleteMenuFromCart(ctx, db, cartID, menu)
+		return 0, err
+	}
+
 	finalQuantity, err := upsertMenuToCart(ctx, db, cartID, quantity, menu); if err != nil {
 		return 0, err
 	}

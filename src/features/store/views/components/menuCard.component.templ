@@ -23,7 +23,7 @@ func formatPrice(price int) string {
 	return formatted
 }
 
-templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQuantity, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string) {
+templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQuantity, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string, isWithSearchQuery bool, searchQuery string) {
     <sl-card 
             if (menu.IsAvailable) {
                 class="ltr card-image bg-base-100 shadow-sm w-full list"
@@ -32,8 +32,12 @@ templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQu
             }
 
             if (lastInList && isScrollable) {
-                if (isWithCategory) {
+                if (isWithCategory && isWithSearchQuery) {
+                    hx-get={ fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d&menu_category_id=%s&query=%s", store.ID, size, menu.SecondaryID, menuCategoryID, searchQuery) }
+                } else if (isWithCategory && !isWithSearchQuery) {
                     hx-get={ fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d&menu_category_id=%s", store.ID, size, menu.SecondaryID, menuCategoryID) }
+                } else if (!isWithCategory && isWithSearchQuery) {
+                    hx-get={ fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d&query=%s", store.ID, size, menu.SecondaryID, searchQuery) }
                 } else {
                     hx-get={ fmt.Sprintf("/stores/%s/menus?size=%d&last_menu_secondary_id=%d", store.ID, size, menu.SecondaryID) }
                 }
