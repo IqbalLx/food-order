@@ -140,3 +140,19 @@ func doSearchStoresByMenuName(ctx context.Context, db *pgxpool.Pool, cartID stri
 
 	return stores, maxPage, nil
 }
+
+func doGetMenuByID(ctx context.Context, db *pgxpool.Pool, cartID string, storeID string, menuID string) (entities.StoreMenuWithQuantity, error) {
+	isExists, err := isMenuExistsInStore(ctx, db, storeID, menuID); if err != nil {
+		return entities.StoreMenuWithQuantity{}, err
+	}
+
+	if (!isExists) {
+		return entities.StoreMenuWithQuantity{}, errors.New("menu doesnt exists")
+	}
+
+	menu, err := getStoreMenuByID(ctx, db, cartID, menuID); if err != nil {
+		return entities.StoreMenuWithQuantity{}, err
+	}
+
+	return menu, nil
+}

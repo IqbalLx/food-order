@@ -455,3 +455,72 @@ func getTopMacthingMenuFromStores(ctx context.Context, db *pgxpool.Pool, cartID 
 
 	return menus, nil
 }
+
+func isMenuExistsInStore(ctx context.Context, db *pgxpool.Pool, storeID string, storeMenuID string) (bool, error) {
+	sqlf.SetDialect(sqlf.PostgreSQL)
+	query := sqlf.
+		From("stores as s").
+		Clause("JOIN store_menus as sm ON sm.store_id = s.id AND").
+		Expr("sm.id = ?", storeMenuID).
+		Select("1 as one").
+		Limit(1)
+
+	sql, args := query.String(), query.Args()
+	row := db.QueryRow(ctx, sql, args...)
+
+	var one string
+	err := row.Scan(&one); if err != nil {
+		if err.Error() == pgx.ErrNoRows.Error() {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	return true, nil
+}
+
+func getStoreMenuByID(ctx context.Context, db *pgxpool.Pool, cartID string, storeMenuID string) (entities.StoreMenuWithQuantity, error) {
+	sqlf.SetDialect(sqlf.PostgreSQL)
+	query := sqlf.
+		Select(
+			`sm.id,
+			sm.name,
+			sm.image,
+			sm.price,
+			sm.ordered_count,
+			sm.price_promo,
+			sm.is_available`,
+		).
+		Select("COALESCE(ci.quantity, 0) as quantity").
+		From("store_menus as sm").
+		Clause(
+			`LEFT JOIN cart_items as ci ON 
+				ci.store_menu_id = sm.id AND 
+				ci.store_id = sm.store_id AND`,
+		).
+		Expr("ci.cart_id = ?", cartID).
+		Where("sm.id = ?", storeMenuID).
+		Limit(1)
+
+	sql, args := query.String(), query.Args()
+	row := db.QueryRow(ctx, sql, args...)
+	
+	var menu entities.StoreMenuWithQuantity
+	err := row.Scan(
+		&menu.ID,
+		&menu.Name,
+		&menu.Image,
+		&menu.Price,
+		&menu.OrderedCount,
+		&menu.PricePromo,
+		&menu.IsAvailable,
+		&menu.Quantity,
+	)
+
+	if err != nil {
+		return menu, err
+	}
+
+	return menu, nil
+}

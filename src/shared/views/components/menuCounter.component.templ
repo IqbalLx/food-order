@@ -2,11 +2,12 @@ package views
 
 import (
     "strconv"
+	"fmt"
 )
 
-script updateQuantity(menuID string, step int, isIncreasing bool) {
-    const inputElem = document.getElementById(`quantity-input-${menuID}`);
-    const displayElem = document.getElementById(`quantity-display-${menuID}`);
+script updateQuantity(menuID string, step int, isIncreasing bool, origin string) {
+    const inputElem = document.getElementById(`quantity-input__${origin}-${menuID}`);
+    const displayElem = document.getElementById(`quantity-display__${origin}-${menuID}`);
 
     const quantity = parseInt(inputElem.value);
     const newQuantity = isIncreasing ? quantity + step : Math.max(0, quantity - step);
@@ -15,37 +16,40 @@ script updateQuantity(menuID string, step int, isIncreasing bool) {
     displayElem.innerText = newQuantity.toString()
 }
 
-templ MenuCounter(menuID string, quantity int) {
-    <div class="flex flex-row items-center rounded-md pop-out" id={ "menu-counter-" + menuID }>
+templ MenuCounter(menuID string, quantity int, origin string) {
+    <div class="flex flex-row items-center rounded-md pop-out" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) }>
         <sl-button 
             size="small"
             class="text-sm m-0 p-0"
             circle
 
-            onclick={ updateQuantity(menuID, 1, false) }
+            onclick={ updateQuantity(menuID, 1, false, origin) }
             hx-put="/carts"
-            hx-trigger="click delay:300ms"
-            hx-include={ "#form-input-" + menuID }
-            hx-target={ "#menu-counter-" + menuID }
+            hx-trigger="click consume delay:300ms"
+            hx-include={ fmt.Sprintf("#form-input__%s-%s", origin, menuID) }
+            hx-target={ fmt.Sprintf("#menu-counter__%s-%s", origin, menuID) }
             hx-swap="outerHTML"
             hx-indicator=".htmx-indicator"
         >
             <sl-icon name="dash" label="Subtract quantity" class="text-md"></sl-icon>
         </sl-button>
 
-        <form id={ "form-input-" + menuID } style="display: none;">
+        <form id={ fmt.Sprintf("form-input__%s-%s", origin, menuID) } style="display: none;">
             <input 
-            id={ "quantity-input-" + menuID }  
+            id={ fmt.Sprintf("quantity-input__%s-%s", origin, menuID) }  
             name="quantity" value={ strconv.Itoa(quantity) }
             ></input>
             <input
             name="menu_id" value={ menuID } 
             ></input>
+            <input
+            name="origin" value={ origin } 
+            ></input>
         </form>
 
         <p 
             class="mx-2 text-sm" 
-            id={ "quantity-display-" + menuID }
+            id={ fmt.Sprintf("quantity-display__%s-%s", origin, menuID) }
         >
           {  strconv.Itoa(quantity) }
         </p>
@@ -55,11 +59,11 @@ templ MenuCounter(menuID string, quantity int) {
             class="text-sm m-0 p-0"
             circle
 
-            onclick={ updateQuantity(menuID, 1, true) }
+            onclick={ updateQuantity(menuID, 1, true, origin) }
             hx-put="/carts"
-            hx-trigger="click delay:300ms"
-            hx-include={ "#form-input-" + menuID }
-            hx-target={ "#menu-counter-" + menuID }
+            hx-trigger="click consume delay:300ms"
+            hx-include={ fmt.Sprintf("#form-input__%s-%s", origin, menuID) }
+            hx-target={ fmt.Sprintf("#menu-counter__%s-%s", origin, menuID)}
             hx-swap="outerHTML"
             hx-indicator=".htmx-indicator"
         >
@@ -68,15 +72,18 @@ templ MenuCounter(menuID string, quantity int) {
     </div>
 }
 
-templ MenuInitialPlusButton(menuID string) {
-    <div class="pop-out" id={ "menu-counter-" + menuID }>
-        <form id={ "form-input-" + menuID } style="display: none;">
+templ MenuInitialPlusButton(menuID string, origin string) {
+    <div class="pop-out" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) }>
+        <form id={ fmt.Sprintf("form-input__%s-%s", origin, menuID) } style="display: none;">
             <input 
-            id={ "quantity-input-" + menuID }  
+            id={ fmt.Sprintf("quantity-input__%s-%s", origin, menuID) }  
             name="quantity" value="1"
             ></input>
             <input
             name="menu_id" value={ menuID } 
+            ></input>
+            <input
+            name="origin" value={ origin } 
             ></input>
         </form>
 
@@ -84,10 +91,10 @@ templ MenuInitialPlusButton(menuID string) {
             variant="default" 
             size="small"
             circle
-            hx-trigger="click"
+            hx-trigger="click consume"
             hx-put="/carts"
-            hx-include={ "#form-input-" + menuID }
-            hx-target={ "#menu-counter-" + menuID }
+            hx-include={ fmt.Sprintf("#form-input__%s-%s", origin, menuID) }
+            hx-target={ fmt.Sprintf("#menu-counter__%s-%s", origin, menuID)}
             hx-swap="outerHTML"
             hx-indicator=".htmx-indicator"
         >

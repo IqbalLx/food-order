@@ -23,6 +23,11 @@ sl-card.list::part(body) {
   margin: 0;
 }
 
+sl-drawer.menu::part(body) {
+  padding: 0;
+  margin: 0;
+}
+
 sl-button.plain::part(base) {
   border-radius: 0;
   margin: 0;

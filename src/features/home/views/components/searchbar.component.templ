@@ -45,6 +45,7 @@ templ Searchbar(initialValue string) {
             hx-indicator=".htmx-indicator"
             hx-target="#store-search-container"
             hx-swap="innerHTML"
+            hx-sync="this:replace"
             >
             <sl-icon name="search" slot="prefix"></sl-icon>
         </sl-input>

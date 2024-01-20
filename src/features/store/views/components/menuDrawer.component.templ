@@ -1,0 +1,66 @@
+package store
+
+import (
+    "strconv"
+
+    "github.com/IqbalLx/food-order/src/shared/entities"
+	"github.com/IqbalLx/food-order/src/shared/utils"
+    sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
+)
+
+script openOnLoad() {
+    const drawer = document.querySelector('#menu-drawer');
+    drawer.show()
+}
+
+templ MenuDrawer(menu entities.StoreMenuWithQuantity, isOpen bool) {
+    <sl-drawer 
+        id="menu-drawer"
+        placement="bottom" 
+        class="drawer-placement-bottom drawer-header-actions menu" 
+        label={ menu.Name }
+        open?={ isOpen }
+
+        hx-on::load={ openOnLoad() }
+    >
+        <div class="flex flex-col justify-between gap-y-4">
+            <img
+                slot="image"
+                src={ menu.Image }
+                alt={ menu.Name }
+                class="aspect-square object-cover w-full h-52 flex-none"
+            />
+
+            <div class="flex flex row justify-between items-end mx-2">
+                <div class="flex flex-col gap-y-2 items-start">
+                    if (menu.PricePromo != 0 && menu.IsAvailable) {
+                        <sl-badge variant="danger" pill>Promo</sl-badge>
+                    }
+
+                    if (menu.PricePromo != 0 && menu.IsAvailable) {
+                        <div class="flex flex-row w-full gap-2">
+                            <p class="text-md">{ utils.FormatPrice(menu.PricePromo) }</p>
+                            <s class="text-md text-slate-300">{ utils.FormatPrice(menu.Price) }</s>
+                        </div>
+                    } else {
+                        <p class="text-md">{ utils.FormatPrice(menu.Price) }</p>
+                    }
+
+                    <p class="text-md text-slate-500 flex-none">
+                        if (menu.OrderedCount > 0) {
+                            Dipesan { strconv.Itoa(menu.OrderedCount) } kali
+                        } else {
+                            Jadi yang pertama cobain!
+                        }
+                    </p>
+                </div>
+
+                if menu.Quantity != 0 {
+                    @sharedComponents.MenuCounter(menu.ID, menu.Quantity, "drawer")
+                } else {
+                    @sharedComponents.MenuInitialPlusButton(menu.ID, "drawer")
+                }
+            </div>
+        </div>
+    </sl-drawer>
+}

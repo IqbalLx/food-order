@@ -13,7 +13,7 @@ import (
 )
 
 func NewCartController(app *fiber.App) {
-	carts := app.Group("/carts", middlewares.ValidateCard)
+	carts := app.Group("/carts", middlewares.ValidateCart)
 	carts.Get("/count", getCartCountHandler)
 	carts.Put("/", upsertCartHandler)
 }
@@ -53,6 +53,7 @@ func upsertCartHandler(c *fiber.Ctx) error {
 	cartID := c.Cookies(appConfig.Name + "__cart")
 
 	menuID := c.FormValue("menu_id")
+	triggerOrigin := c.FormValue("origin")
 	quantity, err := strconv.Atoi(c.FormValue("quantity", "1")); if err != nil {
 		return err
 	}
@@ -68,6 +69,7 @@ func upsertCartHandler(c *fiber.Ctx) error {
 			templ.Handler(
 				sharedComponents.MenuInitialPlusButton(
 					menuID,
+					triggerOrigin,
 				),
 			),
 		)(c) 
@@ -78,6 +80,7 @@ func upsertCartHandler(c *fiber.Ctx) error {
 			sharedComponents.MenuCounter(
 				menuID,
 				finalQuantity,
+				triggerOrigin,
 			),
 		),
 	)(c) 

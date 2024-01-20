@@ -21,21 +21,22 @@ func NewStoreController(app *fiber.App) {
 	stores := app.Group("/stores")
 	stores.Get("/", getStoresHandler)
 
-	stores.Get("/search", middlewares.ValidateCard, searchStoresByMenuNameHandler)
-	stores.Post("/search", middlewares.ValidateCard, searchStoresByMenuNameHandler)
+	stores.Get("/search", middlewares.ValidateCart, searchStoresByMenuNameHandler)
+	stores.Post("/search", middlewares.ValidateCart, searchStoresByMenuNameHandler)
 
-	stores.Get("/:slug", middlewares.ValidateCard, getStoreBySlugHandler)
-	stores.Get("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler)
+	stores.Get("/:slug", middlewares.ValidateCart, getStoreBySlugHandler)
+	stores.Get("/:id/menus", middlewares.ValidateCart, getStoreMenusByStoreIDHandler)
 	
-	stores.Get("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler) 
+	stores.Get("/:id/menus", middlewares.ValidateCart, getStoreMenusByStoreIDHandler) 
+	stores.Get("/:id/menus/:menu_id", middlewares.ValidateCart, getStoreMenuByIDHandler) 
 
 	// POST used to get FormData required for searching
-	stores.Post("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler)
+	stores.Post("/:id/menus", middlewares.ValidateCart, getStoreMenusByStoreIDHandler)
 	stores.Post("/:id/menus/categories", getMenuCategoriesHandler)
 
 	// states
 	storeStates := stores.Group("/states")
-	storeStates.Get("/checkout", middlewares.ValidateCard, getCheckoutStatehandler)
+	storeStates.Get("/checkout", middlewares.ValidateCart, getCheckoutStatehandler)
 }
 
 func getStoresHandler(c *fiber.Ctx) error {
@@ -72,6 +73,8 @@ func getStoresHandler(c *fiber.Ctx) error {
 
 func getStoreBySlugHandler(c *fiber.Ctx) error {
 	storeSlug := c.Params("slug")
+	initialMenuID := c.Query("menu_id", "")
+	isWithInitialMenu := initialMenuID != ""
 	
 	initialMenuSize := 5
 
@@ -94,6 +97,7 @@ func getStoreBySlugHandler(c *fiber.Ctx) error {
 					data.Store, data.MenuCategories, data.Menus, 
 					initialMenuSize, data.IsMenusScrollable,
 					isWithSearchQuery, searchQuery,
+					isWithInitialMenu, initialMenuID,
 					), 
 				data.Store.Name,
 			),
@@ -246,6 +250,23 @@ func searchStoresByMenuNameHandler(c *fiber.Ctx) error {
 		}
 
 	})(c)
+}
+
+func getStoreMenuByIDHandler(c *fiber.Ctx) error {
+	storeID, menuID := c.Params("id"), c.Params("menu_id")
+
+	appConfig := utils.GetLocal[*utils.AppConfig](c, "appConfig")
+	cartID := c.Cookies(appConfig.Name + "__cart")
+
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
+
+	menu, err := doGetMenuByID(c.Context(), db, cartID, storeID, menuID); if err != nil {
+		return err
+	}
+
+	return adaptor.HTTPHandler(
+		templ.Handler(components.MenuDrawer(menu, false)),
+	)(c)
 }
 
 // Store States

@@ -32,7 +32,7 @@ func updateQuantityWithNoDisplay(menuID string, step int, isIncreasing bool) tem
 	}
 }
 
-func SmallMenuCard(menu entities.StoreMenuWithQuantity) templ.Component {
+func SmallMenuCard(storeSlug string, menu entities.StoreMenuWithQuantity) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -45,7 +45,15 @@ func SmallMenuCard(menu entities.StoreMenuWithQuantity) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-card class=\"flex-none list ltr card-image bg-base-100 shadow-sm w-60 h-20 overflow-hidden\"><img slot=\"image\" src=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-card class=\"flex-none list ltr card-image bg-base-100 shadow-sm w-60 h-20 overflow-hidden\" hx-get=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/stores/%s?menu_id=%s", storeSlug, menu.ID)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"click\" hx-push-url=\"true\" hx-target=\"section\" hx-swap=\"outerHTML\"><img slot=\"image\" src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -83,7 +91,7 @@ func SmallMenuCard(menu entities.StoreMenuWithQuantity) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(menu.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 37, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 45, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -120,7 +128,7 @@ func SmallMenuCard(menu entities.StoreMenuWithQuantity) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.PricePromo))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 51, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 59, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -133,7 +141,7 @@ func SmallMenuCard(menu entities.StoreMenuWithQuantity) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 52, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 60, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -151,7 +159,7 @@ func SmallMenuCard(menu entities.StoreMenuWithQuantity) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 55, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 63, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -211,7 +219,7 @@ func SmallMenuCard(menu entities.StoreMenuWithQuantity) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-put=\"/carts\" hx-trigger=\"click delay:300ms\" hx-include=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-put=\"/carts\" hx-trigger=\"click consume delay:300ms\" hx-include=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -285,7 +293,7 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(store.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 113, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 121, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -303,7 +311,7 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(float64(store.Rating)/10, 'f', 1, 32))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 118, Col: 120}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 126, Col: 120}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -321,7 +329,7 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(store.ShortDesc)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 124, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 132, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -339,7 +347,7 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 131, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 139, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -362,7 +370,7 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(store.MatchingMenuCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 137, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/storeCardWithMenu.component.templ`, Line: 145, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -406,7 +414,7 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = SmallMenuCard(menu).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = SmallMenuCard(store.Slug, menu).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

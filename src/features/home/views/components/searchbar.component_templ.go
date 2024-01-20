@@ -67,7 +67,7 @@ func Searchbar(initialValue string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" pill clearable autofocus hx-post=\"/stores/search\" hx-trigger=\"sl-input from:body delay:200ms\" hx-indicator=\".htmx-indicator\" hx-target=\"#store-search-container\" hx-swap=\"innerHTML\"><sl-icon name=\"search\" slot=\"prefix\"></sl-icon></sl-input><div hx-trigger=\"load\" hx-get=\"/carts/count\" hx-target=\"this\" hx-swap=\"outerHTML\" hx-indicator=\".htmx-indicator\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" pill clearable autofocus hx-post=\"/stores/search\" hx-trigger=\"sl-input from:body delay:200ms\" hx-indicator=\".htmx-indicator\" hx-target=\"#store-search-container\" hx-swap=\"innerHTML\" hx-sync=\"this:replace\"><sl-icon name=\"search\" slot=\"prefix\"></sl-icon></sl-input><div hx-trigger=\"load\" hx-get=\"/carts/count\" hx-target=\"this\" hx-swap=\"outerHTML\" hx-indicator=\".htmx-indicator\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

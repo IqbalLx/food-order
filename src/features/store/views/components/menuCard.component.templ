@@ -10,6 +10,14 @@ import (
 )
 
 templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQuantity, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string, isWithSearchQuery bool, searchQuery string) {
+    <div
+        class="menu-card"
+        hx-trigger="click"
+        hx-get={ fmt.Sprintf("/stores/%s/menus/%s", store.ID, menu.ID) }
+        hx-target="#menu-drawer-container"
+        hx-swap="innerHTML"
+        hx-indicator=".htmx-indicator"
+    >
     <sl-card 
             if (menu.IsAvailable) {
                 class="ltr card-image bg-base-100 shadow-sm w-full list"
@@ -33,6 +41,7 @@ templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQu
                 hx-swap="outerHTML"
             }
             >
+
             <img
                 slot="image"
                 src={ menu.Image }
@@ -76,13 +85,14 @@ templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQu
                             </p>
 
                             if menu.Quantity != 0 {
-                                @sharedComponents.MenuCounter(menu.ID, menu.Quantity)
+                                @sharedComponents.MenuCounter(menu.ID, menu.Quantity, "card")
                             } else {
-                                @sharedComponents.MenuInitialPlusButton(menu.ID)
+                                @sharedComponents.MenuInitialPlusButton(menu.ID, "card")
                             }
                         </div>
                     }
                 </div>
             </div>
         </sl-card>
+    </div>
 }

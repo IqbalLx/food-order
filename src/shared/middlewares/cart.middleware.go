@@ -79,7 +79,7 @@ func CreateCartForNewUser(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-func ValidateCard(c *fiber.Ctx) error {
+func ValidateCart(c *fiber.Ctx) error {
 	appConfig := utils.GetLocal[*utils.AppConfig](c, "appConfig")
 	cartCookieName := appConfig.Name + "__cart"
 	

@@ -69,7 +69,7 @@ func Searchbar(store entities.StoreWithCategories, isWithSearchQuery bool, searc
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"sl-input from:body delay:200ms\" hx-indicator=\".htmx-indicator\" hx-target=\"#menu-container\" hx-swap=\"innerHTML\"><sl-icon name=\"search\" slot=\"prefix\"></sl-icon></sl-input><div hx-trigger=\"load\" hx-get=\"/carts/count\" hx-target=\"this\" hx-swap=\"outerHTML\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"sl-input from:body delay:200ms\" hx-indicator=\".htmx-indicator\" hx-target=\"#menu-container\" hx-swap=\"innerHTML\" hx-sync=\"this:replace\"><sl-icon name=\"search\" slot=\"prefix\"></sl-icon></sl-input><div hx-trigger=\"load\" hx-get=\"/carts/count\" hx-target=\"this\" hx-swap=\"outerHTML\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
