@@ -58,7 +58,6 @@ func getStoresHandler(c *fiber.Ctx) error {
 		return err
 	}
 
-	c.Set("HX-Trigger", "cart-count-update")
 	return adaptor.HTTPHandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			for i, store := range stores {
 				sharedComponents.StoreCard(store, size, i == len(stores) - 1, isScrollable).Render(c.Context(), w)
@@ -81,7 +80,7 @@ func getStoreBySlugHandler(c *fiber.Ctx) error {
 
 	db := utils.GetLocal[*pgxpool.Pool](c, "db")
 
-	searchQuery := c.Query("q", "")
+	searchQuery := c.Query("query", "")
 	isWithSearchQuery := searchQuery != ""
 
 	data, err := doGetInitialStoreDetail(c.Context(), db, cartID, storeSlug, initialMenuSize, isWithSearchQuery, searchQuery); if err != nil {
@@ -143,6 +142,11 @@ func getStoreMenusByStoreIDHandler(c *fiber.Ctx) error {
 		return err
 	}
 
+	if (isWithSearchQuery && c.Route().Method == "POST") {
+		c.Set("HX-Push-Url", fmt.Sprintf("/stores/%s?query=%s", data.Store.Slug, utils.EncodeQuerystring(searchQuery)))
+	} else if (!isWithSearchQuery && c.Route().Method == "POST") {
+		c.Set("HX-Push-Url", fmt.Sprintf("/stores/%s", data.Store.Slug))
+	}
 	return adaptor.HTTPHandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			for i, menu := range data.Menus {
 				components.MenuCard(data.Store, menu, size, i == len(data.Menus) - 1, data.IsMenusScrollable, isWithCategory, 
@@ -224,7 +228,7 @@ func searchStoresByMenuNameHandler(c *fiber.Ctx) error {
 	nextPage := page + 1
 	isNextPageAvailable := nextPage <= maxPage
 
-	c.Set("HX-Replace-Url", fmt.Sprintf("/search?query=%s", utils.EncodeQuerystring(searchQuery)))
+	c.Set("HX-Push-Url", fmt.Sprintf("/search?query=%s", utils.EncodeQuerystring(searchQuery)))
 	return adaptor.HTTPHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for i, store := range stores {
 			sharedComponents.StoreCardWithMenu(

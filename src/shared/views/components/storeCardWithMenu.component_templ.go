@@ -247,12 +247,12 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 templ.SafeURL = templ.URL(fmt.Sprintf("/stores/%s", store.Slug))
+		var templ_7745c5c3_Var9 templ.SafeURL = templ.URL(fmt.Sprintf("/stores/%s?query=%s", store.Slug, utils.EncodeQuerystring(query)))
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var9)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\" hx-boost=\"true\" hx-replace-url=\"true\"><sl-card class=\"ltr list card-image bg-base-100 shadow-sm w-full px-2\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\" hx-boost=\"true\" hx-push-url=\"true\"><sl-card class=\"ltr list card-image bg-base-100 shadow-sm w-full px-2\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -396,7 +396,7 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if i == len(store.Menus)-1 {
+			if i == len(store.Menus)-1 && len(store.Menus) == store.MatchingMenuCount {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" class=\"mr-2\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -411,6 +411,30 @@ func StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size 
 				return templ_7745c5c3_Err
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if len(store.Menus) < store.MatchingMenuCount {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var17 templ.SafeURL = templ.URL(fmt.Sprintf("/stores/%s?query=%s", store.Slug, utils.EncodeQuerystring(query)))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var17)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\" hx-boost=\"true\" hx-push-url=\"true\"><div class=\"flex flex-col w-20 h-20 mr-2 gap-y-1 justify-center\"><div class=\"w-full flex-none\"><sl-button variant=\"default\" size=\"small\" circle class=\"flex flex-row justify-center\"><sl-icon name=\"arrow-right\" label=\"Lihat semua\" class=\"text-sm\"></sl-icon></sl-button></div><div class=\"text-xs text-prose w-full flex-none\"><p class=\"flex flex-row justify-center\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var18 := `Lihat Semua`
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -434,9 +458,9 @@ func StoreCardWithMenuSkeleton() templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var17 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var17 == nil {
-			templ_7745c5c3_Var17 = templ.NopComponent
+		templ_7745c5c3_Var19 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var19 == nil {
+			templ_7745c5c3_Var19 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = GenericCardSkeleton("").Render(ctx, templ_7745c5c3_Buffer)
@@ -462,9 +486,9 @@ func StoreCardWithMenuIndicator() templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var18 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var18 == nil {
-			templ_7745c5c3_Var18 = templ.NopComponent
+		templ_7745c5c3_Var20 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var20 == nil {
+			templ_7745c5c3_Var20 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mx-2 htmx-indicator\">")

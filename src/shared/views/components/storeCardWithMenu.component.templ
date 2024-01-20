@@ -80,7 +80,7 @@ templ SmallMenuCard(menu entities.StoreMenuWithQuantity) {
                                 hx-indicator=".htmx-indicator"
                             > 
                                 <sl-icon name="plus-lg" label="Tambah ke Keranjang" class="text-sm"></sl-icon>
-                            </sl-button>
+                        </sl-button>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@ templ SmallMenuCard(menu entities.StoreMenuWithQuantity) {
 
 templ StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size int, isNextPageAvailable bool, nextPage int, lastInList bool) {
     <div>
-        <a href={ templ.URL(fmt.Sprintf("/stores/%s", store.Slug)) } class="w-full" hx-boost="true" hx-replace-url="true">
+        <a href={ templ.URL(fmt.Sprintf("/stores/%s?query=%s", store.Slug, utils.EncodeQuerystring(query))) } class="w-full" hx-boost="true" hx-push-url="true">
         <sl-card 
                 class="ltr list card-image bg-base-100 shadow-sm w-full px-2"
                 if (lastInList && isNextPageAvailable) {
@@ -147,12 +147,36 @@ templ StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size
                 <div 
                     if (i == 0) {
                         class="ml-2"
-                    } else if (i == len(store.Menus) - 1) {
+                    } else if (i == len(store.Menus) - 1 && len(store.Menus) == store.MatchingMenuCount) {
                         class="mr-2"
                     }
                 >
                     @SmallMenuCard(menu)
                 </div>
+            }
+
+            if (len(store.Menus) < store.MatchingMenuCount) {
+                <a href={ templ.URL(fmt.Sprintf("/stores/%s?query=%s", store.Slug, utils.EncodeQuerystring(query))) } class="w-full" hx-boost="true" hx-push-url="true">
+                    <div class="flex flex-col w-20 h-20 mr-2 gap-y-1 justify-center">
+                        <div class="w-full flex-none">
+                            <sl-button 
+                                    variant="default" 
+                                    size="small" 
+                                    circle
+
+                                    class="flex flex-row justify-center"
+                                > 
+                                    <sl-icon name="arrow-right" label="Lihat semua" class="text-sm"></sl-icon>
+                            </sl-button>
+                        </div>
+
+                        <div class="text-xs text-prose w-full flex-none">
+                            <p class="flex flex-row justify-center">
+                                Lihat Semua
+                            </p>
+                        </div>
+                    </div>
+                </a>
             }
         </div>
 

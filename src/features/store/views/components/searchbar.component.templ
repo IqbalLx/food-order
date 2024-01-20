@@ -13,12 +13,12 @@ templ Searchbar(store entities.StoreWithCategories, isWithSearchQuery bool, sear
             id="store-menu-searchbar"
 
             if (isWithSearchQuery) {
-                placeholder={ searchQuery }
                 value={ searchQuery }
             } else {
-                placeholder={ fmt.Sprintf("Cari menu %s ...", store.Name) }
                 value=""
             }
+
+            placeholder={ fmt.Sprintf("Cari menu %s ...", store.Name) }
             size="small" 
             class="bg-white text-sm w-5/6"
             type="search"

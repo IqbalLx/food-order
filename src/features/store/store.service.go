@@ -128,7 +128,7 @@ func doSearchStoresByMenuName(ctx context.Context, db *pgxpool.Pool, cartID stri
 		storeIDS[i] = store.ID
 	}
 
-	topMatchCount := 5
+	topMatchCount := 3
 	menus, err := getTopMacthingMenuFromStores(ctx, db, cartID, menuName, storeIDS, topMatchCount); if err != nil {
 		log.Debug(err.Error())
 		return []entities.StoreWithMatchingMenu{}, 0, err
