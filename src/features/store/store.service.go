@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/IqbalLx/food-order/src/shared/entities"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -111,4 +112,31 @@ func doGetMenuCategories(ctx context.Context, db *pgxpool.Pool, storeID string, 
 	data.MenuCategories = menuCategories
 
 	return data, nil
+}
+
+func doSearchStoresByMenuName(ctx context.Context, db *pgxpool.Pool, cartID string, menuName string, page int, pageSize int) ([]entities.StoreWithMatchingMenu, int, error) {
+	stores, maxPage, err := searchStoresByMenuName(ctx, db, menuName, page, pageSize); if err != nil {
+		return []entities.StoreWithMatchingMenu{}, 0, err
+	}
+
+	if len(stores) == 0 {
+		return []entities.StoreWithMatchingMenu{}, 0, nil
+	}
+
+	storeIDS := make([]interface{}, len(stores))
+	for i, store := range stores {
+		storeIDS[i] = store.ID
+	}
+
+	topMatchCount := 5
+	menus, err := getTopMacthingMenuFromStores(ctx, db, cartID, menuName, storeIDS, topMatchCount); if err != nil {
+		log.Debug(err.Error())
+		return []entities.StoreWithMatchingMenu{}, 0, err
+	}
+
+	if err = populateMatcingMenus(&stores, menus); err != nil {
+		return []entities.StoreWithMatchingMenu{}, 0, err
+	}
+
+	return stores, maxPage, nil
 }

@@ -15,23 +15,9 @@ import (
 	"strconv"
 
 	"github.com/IqbalLx/food-order/src/shared/entities"
+	"github.com/IqbalLx/food-order/src/shared/utils"
 	sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
 )
-
-func formatPrice(price int) string {
-	currencyStr := strconv.Itoa(price)
-	length := len(currencyStr)
-
-	var formatted string
-
-	if length <= 3 {
-		formatted = currencyStr
-	} else {
-		formatted = currencyStr[:length-3] + "." + currencyStr[length-3:]
-	}
-
-	return formatted
-}
 
 func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQuantity, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string, isWithSearchQuery bool, searchQuery string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -168,7 +154,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(menu.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 65, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 51, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -203,9 +189,9 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(formatPrice(menu.PricePromo))
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.PricePromo))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 74, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 60, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -216,9 +202,9 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(formatPrice(menu.Price))
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 75, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 61, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -234,9 +220,9 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(formatPrice(menu.Price))
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 78, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 64, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -265,7 +251,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(menu.OrderedCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 85, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/store/views/components/menuCard.component.templ`, Line: 71, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {

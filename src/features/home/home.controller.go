@@ -12,6 +12,7 @@ import (
 
 func NewHomeController(app *fiber.App) {
 	app.Get("/", homeHandler)
+	app.Get("/search", homeSearchHandler)
 }
 
 func homeHandler(c *fiber.Ctx) error {
@@ -31,6 +32,19 @@ func homeHandler(c *fiber.Ctx) error {
 					len(data.Stores), 
 					data.IsStoresScrollable,
 				),
+			),
+		),
+	)(c)
+}
+
+func homeSearchHandler(c *fiber.Ctx) error {
+	initialQuery := c.Query("query", "")
+	isWithQuery := initialQuery != ""
+
+	return adaptor.HTTPHandler(
+		templ.Handler(
+			sharedLayouts.Root(
+				layouts.HomeSearch(isWithQuery, initialQuery),
 			),
 		),
 	)(c)

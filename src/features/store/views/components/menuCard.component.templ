@@ -6,22 +6,8 @@ import (
 
     "github.com/IqbalLx/food-order/src/shared/entities"
     sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
+	"github.com/IqbalLx/food-order/src/shared/utils"
 )
-
-func formatPrice(price int) string {
-	currencyStr := strconv.Itoa(price)
-	length := len(currencyStr)
-
-	var formatted string
-
-	if length <= 3 {
-		formatted = currencyStr
-	} else {
-		formatted = currencyStr[:length-3] + "." + currencyStr[length-3:]
-	}
-
-	return formatted
-}
 
 templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQuantity, size int, lastInList bool, isScrollable bool, isWithCategory bool, menuCategoryID string, isWithSearchQuery bool, searchQuery string) {
     <sl-card 
@@ -72,11 +58,11 @@ templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQu
 
                         if (menu.PricePromo != 0 && menu.IsAvailable) {
                             <div class="flex flex-row w-full gap-2">
-                                <p class="text-sm">{ formatPrice(menu.PricePromo) }</p>
-                                <s class="text-sm text-slate-300">{ formatPrice(menu.Price) }</s>
+                                <p class="text-sm">{ utils.FormatPrice(menu.PricePromo) }</p>
+                                <s class="text-sm text-slate-300">{ utils.FormatPrice(menu.Price) }</s>
                             </div>
                         } else {
-                            <p class="text-sm">{ formatPrice(menu.Price) }</p>
+                            <p class="text-sm">{ utils.FormatPrice(menu.Price) }</p>
                         }
                     </div>
                     if (menu.IsAvailable) {

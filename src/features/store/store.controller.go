@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,12 +20,18 @@ import (
 func NewStoreController(app *fiber.App) {
 	stores := app.Group("/stores")
 	stores.Get("/", getStoresHandler)
+
+	stores.Get("/search", middlewares.ValidateCard, searchStoresByMenuNameHandler)
+	stores.Post("/search", middlewares.ValidateCard, searchStoresByMenuNameHandler)
+
 	stores.Get("/:slug", middlewares.ValidateCard, getStoreBySlugHandler)
 	stores.Get("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler)
 	
+	stores.Get("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler) 
+
 	// POST used to get FormData required for searching
-	stores.Post("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler) 
-	stores.Post("/:id/menus/categories", getMenuCategorieshandler)
+	stores.Post("/:id/menus", middlewares.ValidateCard, getStoreMenusByStoreIDHandler)
+	stores.Post("/:id/menus/categories", getMenuCategoriesHandler)
 
 	// states
 	storeStates := stores.Group("/states")
@@ -149,7 +156,7 @@ func getStoreMenusByStoreIDHandler(c *fiber.Ctx) error {
 	)(c)
 }
 
-func getMenuCategorieshandler(c *fiber.Ctx) error {
+func getMenuCategoriesHandler(c *fiber.Ctx) error {
 	// if not from HTMX redirect to home
 	fromHTMX := c.Get("HX-Request", "false")
 	if (fromHTMX == "false") {
@@ -171,6 +178,66 @@ func getMenuCategorieshandler(c *fiber.Ctx) error {
 			layouts.StoreFooter(data.Store, data.MenuCategories),
 		),
 	)(c)
+}
+
+func searchStoresByMenuNameHandler(c *fiber.Ctx) error {
+	var searchQuery string
+	var page, pageSize int
+
+	if c.Route().Method == "POST" {
+		searchQuery = c.FormValue("query", "")
+
+		// POST request indicates initial search action, so set default page and size
+		page = 1
+		pageSize = 10
+	} else if c.Route().Method == "GET" {
+		searchQuery = c.Query("query", "")
+
+		pageStr := c.Query("page", "1")
+		pageSizeStr := c.Query("size", "10")
+
+		var err error
+		page, err = strconv.Atoi(pageStr); if err != nil {
+			return err
+		}
+		pageSize, err = strconv.Atoi(pageSizeStr); if err != nil {
+			return err
+		}
+	}
+
+	if (searchQuery == "") {
+		return c.Status(200).SendString("")
+	}
+
+	appConfig := utils.GetLocal[*utils.AppConfig](c, "appConfig")
+	cartID := c.Cookies(appConfig.Name + "__cart")
+
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
+	stores, maxPage, err := doSearchStoresByMenuName(c.Context(), db, cartID, searchQuery, page, pageSize); if err != nil {
+		return err
+	}
+
+	nextPage := page + 1
+	isNextPageAvailable := nextPage <= maxPage
+
+	c.Set("HX-Replace-Url", fmt.Sprintf("/search?query=%s", utils.EncodeQuerystring(searchQuery)))
+	return adaptor.HTTPHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for i, store := range stores {
+			sharedComponents.StoreCardWithMenu(
+				store, 
+				searchQuery, 
+				pageSize, 
+				isNextPageAvailable, 
+				nextPage, 
+				i == len(stores) - 1,
+			 ).Render(c.Context(), w)
+		}
+
+		if isNextPageAvailable {
+			sharedComponents.GenericCardSkeleton("store-with-menu-last-card").Render(c.Context(), w)
+		}
+
+	})(c)
 }
 
 // Store States

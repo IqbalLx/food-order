@@ -1,0 +1,42 @@
+package home
+
+import (
+    components "github.com/IqbalLx/food-order/src/features/home/views/components"
+    sharedComponents "github.com/IqbalLx/food-order/src/shared/views/components"
+)
+
+templ HomeSearch(isWithInitialQuery bool, initialQuery string) {
+    <div class="flex flex-col overflow-y-auto no-scrollbar">
+        <div class="sticky top-0 bg-white z-50">
+            <div class="px-2">
+                if (isWithInitialQuery) {
+                    @components.Searchbar(initialQuery)
+                } else {
+                    @components.Searchbar("")
+                }
+            </div>
+            <sl-progress-bar style="--height: 4px;" class="htmx-indicator w-full" indeterminate></sl-progress-bar>
+        </div>
+
+        <div 
+            id="store-search-container" 
+            class="flex flex-col gap-y-2"
+
+            if (isWithInitialQuery) {
+                hx-post="/stores/search"
+                hx-trigger="load"
+                hx-indicator=".htmx-indicator"
+                hx-target="#store-search-container"
+                hx-swap="innerHTML"
+                hx-include="#home-searchbar"
+            }
+        
+        >
+            if (isWithInitialQuery) {
+                @sharedComponents.GenericCardSkeleton("")
+                @sharedComponents.GenericCardSkeleton("")
+                @sharedComponents.GenericCardSkeleton("")
+            }
+        </div>
+    </div>
+}

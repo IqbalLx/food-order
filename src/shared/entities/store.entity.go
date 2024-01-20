@@ -25,3 +25,9 @@ type StoreWithMenus struct {
 	Store
 	Menus []StoreMenu
 }
+
+type StoreWithMatchingMenu struct {
+	StoreWithCategories
+	MatchingMenuCount int
+	Menus []StoreMenuWithQuantity
+}
