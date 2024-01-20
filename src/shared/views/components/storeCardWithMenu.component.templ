@@ -159,3 +159,25 @@ templ StoreCardWithMenu(store entities.StoreWithMatchingMenu, query string, size
         <sl-divider></sl-divider>
     </div>
 }
+
+templ StoreCardWithMenuSkeleton() {
+    @GenericCardSkeleton("")
+
+    <sl-card class="flex-none list ltr card-image bg-base-100 shadow-sm w-60 h-20 overflow-hidden">
+            <div slot="image">
+                <sl-skeleton class="w-20 h-20" style="--border-radius: 0;"></sl-skeleton>
+            </div>
+
+        <div class="w-full h-full flex flex-col justify-evenly mx-2 py-1">
+            <sl-skeleton effect="pulse"></sl-skeleton>
+            <sl-skeleton class="w-50%" effect="pulse"></sl-skeleton>
+        </div>
+    </sl-card>
+}
+
+templ StoreCardWithMenuIndicator() {
+    <div class="mx-2 htmx-indicator">
+        @StoreCardWithMenuSkeleton()
+        <sl-divider></sl-divider>
+    </div>
+}

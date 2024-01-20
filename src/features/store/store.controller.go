@@ -206,7 +206,11 @@ func searchStoresByMenuNameHandler(c *fiber.Ctx) error {
 	}
 
 	if (searchQuery == "") {
-		return c.Status(200).SendString("")
+		return adaptor.HTTPHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			for i := 0; i < 2; i++ {
+				sharedComponents.StoreCardWithMenuIndicator().Render(c.Context(), w)
+			}
+		})(c)
 	}
 
 	appConfig := utils.GetLocal[*utils.AppConfig](c, "appConfig")

@@ -33,9 +33,9 @@ templ HomeSearch(isWithInitialQuery bool, initialQuery string) {
         
         >
             if (isWithInitialQuery) {
-                @sharedComponents.GenericCardSkeleton("")
-                @sharedComponents.GenericCardSkeleton("")
-                @sharedComponents.GenericCardSkeleton("")
+                for i := 0; i < 2; i++ {
+                    @sharedComponents.StoreCardWithMenuIndicator()
+                }
             }
         </div>
     </div>
