@@ -10,6 +10,10 @@ import (
 	"github.com/IqbalLx/food-order/src/shared/middlewares"
 	"github.com/IqbalLx/food-order/src/shared/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -39,6 +43,7 @@ func main() {
 	app := fiber.New()
 
 	app.Static("/static", "./src/static") 
+	app.Static("/htmx", "./node_modules/htmx.org/dist") 
 	app.Static("/shoelace", "./node_modules/@shoelace-style/shoelace") 
 
 	app.Use(func(c *fiber.Ctx) error {
@@ -47,6 +52,21 @@ func main() {
 
 		return c.Next()
 	})
+
+	if appConfig.Environment != "dev" {
+		app.Use(requestid.New())
+		app.Use(cors.New(cors.Config{
+			AllowOrigins: "https://foodie.learn-and.live",
+			AllowHeaders:  "Origin, Content-Type, Accept",
+		}))
+		app.Use(limiter.New(limiter.Config{
+			Max: 100,
+		}))
+		app.Use(logger.New(logger.Config{
+			Format: "${pid} ${locals:requestid} ${status} - ${method} ${path}\n",
+		}))
+	}
+
 	app.Use(middlewares.CreateCartForNewUser)
 
 	home.NewHomeController(app)
