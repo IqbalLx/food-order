@@ -27,7 +27,7 @@ func CartIcon(cartCount int) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-button variant=\"default\" size=\"medium\" circle hx-trigger=\"cart-count-update from:body\" hx-get=\"/carts/count\" hx-target=\"this\" hx-swap=\"outerHTML\" hx-indicator=\".htmx-indicator\"><sl-icon name=\"cart\" label=\"Keranjang\" class=\"text-md\"></sl-icon> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-button id=\"cart\" variant=\"default\" size=\"medium\" circle hx-trigger=\"click\" hx-get=\"/carts\" hx-target=\"section\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\" hx-push-url=\"true\"><sl-icon name=\"cart\" label=\"Keranjang\" class=\"text-md\" hx-trigger=\"cart-count-update from:body\" hx-get=\"/carts/count\" hx-target=\"#cart\" hx-swap=\"outerHTML\" hx-indicator=\".htmx-indicator\" hx-disinherit=\"*\" hx-push-url=\"false\"></sl-icon> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,7 +39,7 @@ func CartIcon(cartCount int) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(cartCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/cartIcon.component.templ`, Line: 21, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/shared/views/components/cartIcon.component.templ`, Line: 33, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {

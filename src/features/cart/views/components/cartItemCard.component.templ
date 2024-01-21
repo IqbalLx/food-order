@@ -1,0 +1,267 @@
+package cart
+
+import (
+    "fmt"
+    "strconv"
+
+    "github.com/IqbalLx/food-order/src/shared/entities"
+    "github.com/IqbalLx/food-order/src/shared/utils"
+)
+
+script updateQuantity(menuID string, step int, isIncreasing bool, origin string) {
+    const inputElem = document.getElementById(`quantity-input__${origin}-${menuID}`);
+    const displayElem = document.getElementById(`quantity-display__${origin}-${menuID}`);
+    const cartSubtractCounter = document.getElementById(`cart-subtract-counter__${menuID}`)
+
+    const quantity = parseInt(inputElem.value);
+    const newQuantity = isIncreasing ? quantity + step : Math.max(1, quantity - step);
+
+    if (newQuantity === 1) {
+        cartSubtractCounter.setAttribute("disabled", "")
+    } else {
+        cartSubtractCounter.removeAttribute("disabled")
+    }
+
+    inputElem.value = newQuantity.toString();
+    displayElem.innerText = newQuantity.toString()
+}
+
+templ CartMenuCounter(menuID string, quantity int, origin string) {
+    <div class="flex flex-row items-center rounded-md pop-out" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) }>
+        <sl-button 
+            id={ fmt.Sprintf("cart-subtract-counter__%s", menuID) }
+            size="small"
+            class="text-sm m-0 p-0"
+            disabled?={ quantity == 1 }
+            circle
+
+            onclick={ updateQuantity(menuID, 1, false, origin) }
+            hx-put="/carts"
+            hx-trigger="click consume delay:300ms"
+            hx-include={ fmt.Sprintf("#form-input__%s-%s", origin, menuID) }
+            hx-target={ fmt.Sprintf("#menu-counter__%s-%s", origin, menuID) }
+            hx-swap="outerHTML"
+            hx-sync="this:replace"
+        >
+            <sl-icon name="dash" label="Subtract quantity" class="text-md"></sl-icon>
+        </sl-button>
+
+        <form id={ fmt.Sprintf("form-input__%s-%s", origin, menuID) } style="display: none;">
+            <input 
+            id={ fmt.Sprintf("quantity-input__%s-%s", origin, menuID) }  
+            name="quantity" value={ strconv.Itoa(quantity) }
+            ></input>
+            <input
+            name="menu_id" value={ menuID } 
+            ></input>
+            <input
+            name="origin" value={ origin } 
+            ></input>
+        </form>
+
+        <p 
+            class="mx-2 text-sm" 
+            id={ fmt.Sprintf("quantity-display__%s-%s", origin, menuID) }
+        >
+          {  strconv.Itoa(quantity) }
+        </p>
+
+        <sl-button 
+            id={ fmt.Sprintf("cart-plus-counter__%s", menuID) }
+            size="small"
+            class="text-sm m-0 p-0"
+            circle
+
+            onclick={ updateQuantity(menuID, 1, true, origin) }
+            hx-put="/carts"
+            hx-trigger="click consume delay:300ms"
+            hx-include={ fmt.Sprintf("#form-input__%s-%s", origin, menuID) }
+            hx-target={ fmt.Sprintf("#menu-counter__%s-%s", origin, menuID)}
+            hx-swap="outerHTML"
+            hx-sync="this:replace"
+        >
+            <sl-icon name="plus" label="Add quantity" class="text-md"></sl-icon>
+        </sl-button>
+    </div>
+}
+
+templ CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQuantityAndSubtotal) {
+    <sl-card
+        id={ fmt.Sprintf("cart__menu-%s", menu.ID)}
+        class="small-list ltr card-image bg-base-100 h-20 w-full"
+
+        hx-trigger="click consume"
+        hx-get={ fmt.Sprintf("/stores/%s?menu_id=%s", storeSlug, menu.ID) }
+        hx-target="section"
+        hx-push-url="true"
+        hx-swap="innerHTML"
+    >
+        <img
+            slot="image"
+            src={ menu.Image }
+            alt={ menu.Name }
+
+            class="aspect-square object-cover h-20 flex-none"
+        />
+
+        <div class="flex-initial w-full h-20">
+            <div class="flex flex-col justify-between py-2 mx-2 h-full w-full">
+                <div class="flex flex-row justify-between items-center">
+                    <div class="flex flex-row gap-x-2">
+                        <strong 
+                            class="text-xs "
+                        >{ menu.Name }</strong>
+
+                        if (menu.PricePromo != 0) {
+                            <sl-badge variant="danger" pill>
+                                <small>
+                                    Promo
+                                </small>
+                            </sl-badge>
+                        }
+                    </div>
+
+                    <sl-icon-button 
+                    
+                        name="trash" 
+                        label="Hapus" 
+                        class="text-sm"
+
+                        hx-trigger="click consume"
+                        hx-delete={ fmt.Sprintf("/carts/stores/%s/menus/%s", storeID, menu.ID) }
+                        hx-target={ fmt.Sprintf("#cart__menu-%s", menu.ID)}
+                        hx-swap="outerHTML"
+                        hx-indicator=".htmx-indicator"
+                        hx-push-url="false"
+                    ></sl-icon-button>
+                </div>
+
+                <div class="flex flex-row justify-between items-end">
+                    if (menu.PricePromo != 0) {
+                        <div class="flex flex-row w-full gap-2">
+                            <p class="text-sm">{ utils.FormatPrice(menu.PricePromo) }</p>
+                            <s class="text-sm text-slate-300">{ utils.FormatPrice(menu.Price) }</s>
+                        </div>
+                    } else {
+                        <p class="text-sm">{ utils.FormatPrice(menu.Price) }</p>
+                    }
+
+                    @CartMenuCounter(menu.ID, menu.Quantity, "cart")
+                </div>
+            </div>
+        </div>
+
+    </sl-card>
+}
+
+templ CartItemCard(store entities.StoreWithCartMenus) {
+    <sl-card 
+        id={ fmt.Sprintf("cart__store-%s", store.ID)}
+        class="w-full"
+
+        hx-trigger="click"
+        hx-get={ fmt.Sprintf("/stores/%s", store.Slug) }
+        hx-target="section"
+        hx-push-url="true"
+        hx-swap="innerHTML"
+    >
+        <div 
+            slot="header" 
+            class="flex flex-row justify-between items-center"
+        >
+            <p class="text-prose text-md truncate">
+                { store.Name }
+            </p>
+            <sl-icon-button 
+                name="trash" 
+                label="Hapus"
+
+                hx-trigger="click consume"
+                hx-delete={ fmt.Sprintf("/carts/stores/%s", store.ID) }
+                hx-target={ fmt.Sprintf("#cart__store-%s", store.ID)}
+                hx-swap="outerHTML"
+                hx-indicator=".htmx-indicator"
+                hx-push-url="false"
+            >
+            </sl-icon-button>
+        </div>
+
+        <div class="flex flex-col justify-evenly mx-4 gap-y-2 py-2">
+            for _, menu := range store.Menus {
+                @CartMenuCard(store.Slug, store.ID, menu)
+            }
+        </div>
+    </sl-card>
+}
+
+templ CartItemSkeleton() {
+    <div class="flex flex-col gap-y-4">
+        <sl-card 
+            class="w-full"
+        >
+            <sl-skeleton effect="pulse"></sl-skeleton>
+
+            <div class="flex flex-col justify-evenly mx-4 gap-y-2 py-2">
+                <sl-card class="ltr">
+                    <div slot="image">
+                        <sl-skeleton class="w-20 h-20" style="--border-radius: 0;" effect="pulse"></sl-skeleton>
+                    </div>
+
+                    <div class="flex flex-col justify-between py-2 mx-2 h-full w-60">
+                        <sl-skeleton effect="pulse"></sl-skeleton>
+
+                        <sl-skeleton effect="pulse"></sl-skeleton>
+                    </div>
+
+                </sl-card>
+
+                <sl-card class="ltr">
+                    <div slot="image">
+                        <sl-skeleton class="w-20 h-20" style="--border-radius: 0;" effect="pulse"></sl-skeleton>
+                    </div>
+
+                    <div class="flex flex-col justify-between py-2 mx-2 h-full w-60">
+                        <sl-skeleton effect="pulse"></sl-skeleton>
+
+                        <sl-skeleton effect="pulse"></sl-skeleton>
+                    </div>
+
+                </sl-card>
+            </div>
+        </sl-card>
+
+        <sl-card 
+            class="w-full"
+        >
+            <sl-skeleton effect="pulse"></sl-skeleton>
+
+            <div class="flex flex-col justify-evenly mx-4 gap-y-2 py-2">
+                <sl-card class="ltr">
+                    <div slot="image">
+                        <sl-skeleton class="w-20 h-20" style="--border-radius: 0;" effect="pulse"></sl-skeleton>
+                    </div>
+
+                    <div class="flex flex-col justify-between py-2 mx-2 h-full w-60">
+                        <sl-skeleton effect="pulse"></sl-skeleton>
+
+                        <sl-skeleton effect="pulse"></sl-skeleton>
+                    </div>
+
+                </sl-card>
+
+                <sl-card class="ltr">
+                    <div slot="image">
+                        <sl-skeleton class="w-20 h-20" style="--border-radius: 0;" effect="pulse"></sl-skeleton>
+                    </div>
+
+                    <div class="flex flex-col justify-between py-2 mx-2 h-full w-60">
+                        <sl-skeleton effect="pulse"></sl-skeleton>
+
+                        <sl-skeleton effect="pulse"></sl-skeleton>
+                    </div>
+
+                </sl-card>
+            </div>
+        </sl-card>
+    </div>
+}

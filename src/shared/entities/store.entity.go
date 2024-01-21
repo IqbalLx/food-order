@@ -31,3 +31,8 @@ type StoreWithMatchingMenu struct {
 	MatchingMenuCount int
 	Menus []StoreMenuWithQuantity
 }
+
+type StoreWithCartMenus struct {
+	Store
+	Menus []StoreMenuWithQuantityAndSubtotal
+}

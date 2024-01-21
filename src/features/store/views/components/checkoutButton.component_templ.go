@@ -23,7 +23,7 @@ func CheckoutButton() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-button variant=\"warning\" size=\"small\" class=\"h-12 plain\"><p class=\"text-xs h-full m-2 my-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-button variant=\"warning\" size=\"small\" class=\"h-12 plain\" hx-trigger=\"click\" hx-get=\"/carts\" hx-target=\"section\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\" hx-push-url=\"true\"><p class=\"text-xs h-full m-2 my-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

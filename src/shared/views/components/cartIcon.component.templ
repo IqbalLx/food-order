@@ -6,18 +6,30 @@ import (
 
 templ CartIcon(cartCount int) {
     <sl-button 
+        id="cart"
         variant="default" 
         size="medium" 
         circle
 
+        hx-trigger="click"
+        hx-get="/carts"
+        hx-target="section"
+        hx-swap="innerHTML"
+        hx-indicator=".htmx-indicator"
+        hx-push-url="true"
+    >
+        <sl-icon 
+        name="cart" label="Keranjang" class="text-md"
+        
         hx-trigger="cart-count-update from:body"
         hx-get="/carts/count"
-        hx-target="this"
+        hx-target="#cart"
         hx-swap="outerHTML"
         hx-indicator=".htmx-indicator"
-    >
-        <sl-icon name="cart" label="Keranjang" class="text-md"></sl-icon>
-        
+        hx-disinherit="*"
+        hx-push-url="false"
+        ></sl-icon>
+
         if cartCount > 0 {
             <sl-badge variant="warning" class="pop-out" pill pulse>{ strconv.Itoa(cartCount) }</sl-badge>
         }

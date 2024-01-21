@@ -5,6 +5,13 @@ templ CheckoutButton() {
         variant="warning"
         size="small"
         class="h-12 plain"
+
+        hx-trigger="click"
+        hx-get="/carts"
+        hx-target="section"
+        hx-swap="innerHTML"
+        hx-indicator=".htmx-indicator"
+        hx-push-url="true"
     >
         <p class="text-xs h-full m-2 my-4">
             Beli Sekarang

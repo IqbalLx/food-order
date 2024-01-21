@@ -1,0 +1,116 @@
+package cart
+
+import (
+    "strconv"
+
+    components "github.com/IqbalLx/food-order/src/features/cart/views/components"
+    "github.com/IqbalLx/food-order/src/shared/entities"
+	"github.com/IqbalLx/food-order/src/shared/utils"
+)
+
+templ CartItems(stores []entities.StoreWithCartMenus, countItems int, totalItems int) {
+    for _, store := range stores {
+        @components.CartItemCard(store)
+    }
+}
+
+templ CartFooter(countStores int, countItems int, totalItems int) {
+    <sl-progress-bar style="--height: 4px;" class="htmx-indicator w-full" indeterminate></sl-progress-bar>
+    <div 
+        class="flex flex-col gap-y-2 m-2"
+
+        hx-trigger="cart-state-update from:body"
+        hx-get="/carts/states"
+        hx-target="#cart-footer"
+        hx-swap="innerHTML"
+        hx-indicator=".htmx-indicator"
+    >
+        <div class="flex flex-row items-end justify-between">
+            <p class="text-sm text-prose">
+                { strconv.Itoa(countItems) } menu dari { strconv.Itoa(countStores) } pedagang
+            </p>
+
+            <p class="text-md text-prose">
+                Rp. { utils.FormatPrice(totalItems) }
+            </p>
+
+        </div>
+
+        <sl-button 
+            variant="default" 
+            outline
+
+            hx-trigger="click"
+            hx-get="/"
+            hx-target="section"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+        >Tambah Menu</sl-button>
+        <sl-button variant="warning">Beli</sl-button>
+    </div>
+}
+
+templ CartFooterEmpty() {
+    <sl-progress-bar style="--height: 4px;" class="htmx-indicator w-full" indeterminate></sl-progress-bar>
+    <div 
+        class="flex flex-col gap-y-2 m-2 items-center"
+
+        hx-trigger="cart-state-update from:body"
+        hx-get="/carts/states"
+        hx-target="#cart-footer"
+        hx-swap="innerHTML"
+        hx-indicator=".htmx-indicator"
+    >
+        <p class="text-sm text-prose">
+            Keranjangmu masih kosong nih
+        </p>
+
+        <sl-button 
+            class="w-full"
+            variant="warning" 
+
+            hx-trigger="click"
+            hx-get="/"
+            hx-target="section"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+        >Tambah menu dulu yuk!</sl-button>
+    </div>
+}
+
+templ CartFooterSkeleton() {
+    <div class="htmx-indicator flex flex-col gap-y-2 m-2">
+        <sl-skeleton effect="pulse"></sl-skeleton>
+
+        <sl-skeleton effect="pulse"></sl-skeleton>
+    </div>
+}
+
+templ Cart() {
+    <div 
+        class="flex flex-col h-screen justify-between overflow-y-auto no-scrollbar gap-y-4"
+
+        hx-trigger="load, cart-refresh from:body"
+        hx-get="/carts/items"
+        hx-target="this"
+        hx-swap="innerHTML"
+        hx-indicator=".htmx-indicator"
+    >
+        <div class=".htmx-indicator">
+            @components.CartItemSkeleton()
+        </div>
+    </div>
+
+    <div 
+        id="cart-footer"
+        class="sticky bottom-0 z-50 bg-white"
+
+        hx-trigger="load"
+        hx-get="/carts/states"
+        hx-target="this"
+        hx-swap="innerHTML"
+        hx-indicator=".htmx-indicator"
+    >
+        @CartFooterSkeleton()
+    </div>
+}

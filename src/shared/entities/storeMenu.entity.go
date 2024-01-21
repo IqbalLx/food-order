@@ -17,6 +17,12 @@ type StoreMenuWithQuantity struct {
 	Quantity int
 }
 
+type StoreMenuWithQuantityAndSubtotal struct {
+	StoreMenu
+	Quantity int
+	Subtotal int
+}
+
 type StoreMenuWithTimestamp struct {
 	StoreMenu
 	TimestampField

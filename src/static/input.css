@@ -23,6 +23,12 @@ sl-card.list::part(body) {
   margin: 0;
 }
 
+sl-card.small-list::part(body) {
+  width: 75%;
+  padding: 0;
+  margin: 0;
+}
+
 sl-drawer.menu::part(body) {
   padding: 0;
   margin: 0;
@@ -78,11 +84,23 @@ sl-icon-button::part(base) {
     padding: 0;
     margin: 0;
   }
+
+  sl-card.small-list::part(body) {
+    width: 70%;
+    padding: 0;
+    margin: 0;
+  }
 }
 
 @media only screen and (max-width: 320px) {
   sl-card.list::part(body) {
     width: 53%;
+    padding: 0;
+    margin: 0;
+  }
+
+  sl-card.small-list::part(body) {
+    width: 63%;
     padding: 0;
     margin: 0;
   }
