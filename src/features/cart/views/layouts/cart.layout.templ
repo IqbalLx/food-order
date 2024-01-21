@@ -14,7 +14,7 @@ templ CartItems(stores []entities.StoreWithCartMenus, countItems int, totalItems
     }
 }
 
-templ CartFooter(countStores int, countItems int, totalItems int) {
+templ CartFooter(countStores int, countMenus int, total int) {
     <sl-progress-bar style="--height: 4px;" class="htmx-indicator w-full" indeterminate></sl-progress-bar>
     <div 
         class="flex flex-col gap-y-2 m-2"
@@ -27,11 +27,11 @@ templ CartFooter(countStores int, countItems int, totalItems int) {
     >
         <div class="flex flex-row items-end justify-between">
             <p class="text-sm text-prose">
-                { strconv.Itoa(countItems) } menu dari { strconv.Itoa(countStores) } pedagang
+                { strconv.Itoa(countMenus) } menu dari { strconv.Itoa(countStores) } pedagang
             </p>
 
             <p class="text-md text-prose">
-                Rp. { utils.FormatPrice(totalItems) }
+                Rp. { utils.FormatPrice(total) }
             </p>
 
         </div>
@@ -88,7 +88,7 @@ templ CartFooterSkeleton() {
 
 templ Cart() {
     <div 
-        class="flex flex-col h-screen justify-between overflow-y-auto no-scrollbar gap-y-4"
+        class="flex flex-col h-screen overflow-y-auto no-scrollbar gap-y-4 items-start"
 
         hx-trigger="load, cart-refresh from:body"
         hx-get="/carts/items"
@@ -103,7 +103,7 @@ templ Cart() {
 
     <div 
         id="cart-footer"
-        class="sticky bottom-0 z-50 bg-white"
+        class="sticky bottom-0 z-50 bg-white border-2 border-t-amber-500"
 
         hx-trigger="load"
         hx-get="/carts/states"

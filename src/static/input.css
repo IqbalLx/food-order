@@ -17,6 +17,11 @@ sl-card::part(body) {
   margin: 0;
 }
 
+sl-card::part(footer) {
+  padding: 0;
+  margin: 0;
+}
+
 sl-card.list::part(body) {
   width: 65%;
   padding: 0;

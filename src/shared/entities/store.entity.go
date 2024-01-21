@@ -34,5 +34,6 @@ type StoreWithMatchingMenu struct {
 
 type StoreWithCartMenus struct {
 	Store
+	Subtotal int
 	Menus []StoreMenuWithQuantityAndSubtotal
 }

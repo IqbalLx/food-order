@@ -27,7 +27,7 @@ script updateQuantity(menuID string, step int, isIncreasing bool, origin string)
 }
 
 templ CartMenuCounter(menuID string, quantity int, origin string) {
-    <div class="flex flex-row items-center rounded-md pop-out" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) }>
+    <div class="flex flex-row items-center rounded-md" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) }>
         <sl-button 
             id={ fmt.Sprintf("cart-subtract-counter__%s", menuID) }
             size="small"
@@ -41,7 +41,6 @@ templ CartMenuCounter(menuID string, quantity int, origin string) {
             hx-include={ fmt.Sprintf("#form-input__%s-%s", origin, menuID) }
             hx-target={ fmt.Sprintf("#menu-counter__%s-%s", origin, menuID) }
             hx-swap="outerHTML"
-            hx-sync="this:replace"
         >
             <sl-icon name="dash" label="Subtract quantity" class="text-md"></sl-icon>
         </sl-button>
@@ -78,7 +77,6 @@ templ CartMenuCounter(menuID string, quantity int, origin string) {
             hx-include={ fmt.Sprintf("#form-input__%s-%s", origin, menuID) }
             hx-target={ fmt.Sprintf("#menu-counter__%s-%s", origin, menuID)}
             hx-swap="outerHTML"
-            hx-sync="this:replace"
         >
             <sl-icon name="plus" label="Add quantity" class="text-md"></sl-icon>
         </sl-button>
@@ -89,12 +87,6 @@ templ CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWith
     <sl-card
         id={ fmt.Sprintf("cart__menu-%s", menu.ID)}
         class="small-list ltr card-image bg-base-100 h-20 w-full"
-
-        hx-trigger="click consume"
-        hx-get={ fmt.Sprintf("/stores/%s?menu_id=%s", storeSlug, menu.ID) }
-        hx-target="section"
-        hx-push-url="true"
-        hx-swap="innerHTML"
     >
         <img
             slot="image"
@@ -102,12 +94,20 @@ templ CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWith
             alt={ menu.Name }
 
             class="aspect-square object-cover h-20 flex-none"
+
+            hx-trigger="click"
+            hx-get={ fmt.Sprintf("/stores/%s?menu_id=%s", storeSlug, menu.ID) }
+            hx-target="section"
+            hx-push-url="true"
+            hx-swap="innerHTML"
         />
 
         <div class="flex-initial w-full h-20">
             <div class="flex flex-col justify-between py-2 mx-2 h-full w-full">
                 <div class="flex flex-row justify-between items-center">
-                    <div class="flex flex-row gap-x-2">
+                    <div 
+                        class="flex flex-row gap-x-2"
+                    >
                         <strong 
                             class="text-xs "
                         >{ menu.Name }</strong>
@@ -133,6 +133,7 @@ templ CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWith
                         hx-swap="outerHTML"
                         hx-indicator=".htmx-indicator"
                         hx-push-url="false"
+                        hx-disinherit="*"
                     ></sl-icon-button>
                 </div>
 
@@ -150,24 +151,33 @@ templ CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWith
                 </div>
             </div>
         </div>
-
     </sl-card>
+}
+
+templ CartItemStateInfo(totalItems int, subtotal int) {
+    <p class="text-prose text-sm">
+        { strconv.Itoa(totalItems) } menu
+    </p>
+
+    <p class="text-prose text-md">
+        Rp. { utils.FormatPrice(subtotal) }
+    </p>
 }
 
 templ CartItemCard(store entities.StoreWithCartMenus) {
     <sl-card 
         id={ fmt.Sprintf("cart__store-%s", store.ID)}
         class="w-full"
-
-        hx-trigger="click"
-        hx-get={ fmt.Sprintf("/stores/%s", store.Slug) }
-        hx-target="section"
-        hx-push-url="true"
-        hx-swap="innerHTML"
     >
         <div 
             slot="header" 
             class="flex flex-row justify-between items-center"
+
+            hx-trigger="click"
+            hx-get={ fmt.Sprintf("/stores/%s", store.Slug) }
+            hx-target="section"
+            hx-push-url="true"
+            hx-swap="innerHTML"
         >
             <p class="text-prose text-md truncate">
                 { store.Name }
@@ -190,6 +200,19 @@ templ CartItemCard(store entities.StoreWithCartMenus) {
             for _, menu := range store.Menus {
                 @CartMenuCard(store.Slug, store.ID, menu)
             }
+        </div>
+
+        <div 
+            slot="footer" 
+            class="flex flex-row justify-between items-center mx-4 my-2"
+
+            hx-trigger="cart-state-update from:body"
+            hx-get={ fmt.Sprintf("/carts/states/stores/%s", store.ID) }
+            hx-target="this"
+            hx-swap="innerHTML"
+            hx-indicator=".htmx-indicator"
+        >
+            @CartItemStateInfo(len(store.Menus), store.Subtotal)
         </div>
     </sl-card>
 }

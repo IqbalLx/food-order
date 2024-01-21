@@ -92,14 +92,14 @@ func doGetCart(ctx context.Context, db *pgxpool.Pool, cartID string) ([]entities
 }
 
 type CartState struct {
-	CountItems int
+	CountMenus int
 	TotalItems int
 	CountStores int
 }
 func doGetCartState(ctx context.Context, db *pgxpool.Pool, cartID string) (CartState, error) {
 	var state CartState
 
-	countItems, err := countCartItems(ctx, db, cartID); if err != nil {
+	countMenus, err := countCartMenus(ctx, db, cartID); if err != nil {
 		return state, err
 	}
 	totalItems, err := sumCartTotal(ctx, db, cartID); if err != nil {
@@ -109,9 +109,21 @@ func doGetCartState(ctx context.Context, db *pgxpool.Pool, cartID string) (CartS
 		return state, err
 	}
 
-	state.CountItems = countItems
+	state.CountMenus = countMenus
 	state.TotalItems = totalItems
 	state.CountStores = countStores
 
 	return state, nil
+}
+
+func doGetCartStateByStoreID(ctx context.Context, db *pgxpool.Pool, cartID string, storeID string) (int, int, error) {
+	countItems, err := countCartItemsByStoreID(ctx, db, cartID, storeID); if err != nil {
+		return 0, 0, err
+	}
+
+	sumItems, err := sumCartItemsSubtotalByStoreID(ctx, db, cartID, storeID); if err != nil {
+		return 0, 0, err
+	}
+
+	return countItems, sumItems, nil
 }

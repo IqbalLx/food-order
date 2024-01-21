@@ -54,7 +54,7 @@ func CartMenuCounter(menuID string, quantity int, origin string) templ.Component
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-row items-center rounded-md pop-out\" id=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-row items-center rounded-md\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -113,7 +113,7 @@ func CartMenuCounter(menuID string, quantity int, origin string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\" hx-sync=\"this:replace\"><sl-icon name=\"dash\" label=\"Subtract quantity\" class=\"text-md\"></sl-icon></sl-button><form id=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\"><sl-icon name=\"dash\" label=\"Subtract quantity\" class=\"text-md\"></sl-icon></sl-button><form id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -168,7 +168,7 @@ func CartMenuCounter(menuID string, quantity int, origin string) templ.Component
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(quantity))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 65, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 64, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -215,7 +215,7 @@ func CartMenuCounter(menuID string, quantity int, origin string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\" hx-sync=\"this:replace\"><sl-icon name=\"plus\" label=\"Add quantity\" class=\"text-md\"></sl-icon></sl-button></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\"><sl-icon name=\"plus\" label=\"Add quantity\" class=\"text-md\"></sl-icon></sl-button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -247,15 +247,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"small-list ltr card-image bg-base-100 h-20 w-full\" hx-trigger=\"click consume\" hx-get=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/stores/%s?menu_id=%s", storeSlug, menu.ID)))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"section\" hx-push-url=\"true\" hx-swap=\"innerHTML\"><img slot=\"image\" src=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"small-list ltr card-image bg-base-100 h-20 w-full\"><img slot=\"image\" src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -271,7 +263,15 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"aspect-square object-cover h-20 flex-none\"><div class=\"flex-initial w-full h-20\"><div class=\"flex flex-col justify-between py-2 mx-2 h-full w-full\"><div class=\"flex flex-row justify-between items-center\"><div class=\"flex flex-row gap-x-2\"><strong class=\"text-xs \">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"aspect-square object-cover h-20 flex-none\" hx-trigger=\"click\" hx-get=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/stores/%s?menu_id=%s", storeSlug, menu.ID)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"section\" hx-push-url=\"true\" hx-swap=\"innerHTML\"><div class=\"flex-initial w-full h-20\"><div class=\"flex flex-col justify-between py-2 mx-2 h-full w-full\"><div class=\"flex flex-row justify-between items-center\"><div class=\"flex flex-row gap-x-2\"><strong class=\"text-xs \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -319,7 +319,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\" hx-indicator=\".htmx-indicator\" hx-push-url=\"false\"></sl-icon-button></div><div class=\"flex flex-row justify-between items-end\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\" hx-indicator=\".htmx-indicator\" hx-push-url=\"false\" hx-disinherit=\"*\"></sl-icon-button></div><div class=\"flex flex-row justify-between items-end\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -331,7 +331,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.PricePromo))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 141, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 142, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -344,7 +344,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 142, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 143, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -362,7 +362,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 145, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 146, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -388,7 +388,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 	})
 }
 
-func CartItemCard(store entities.StoreWithCartMenus) templ.Component {
+func CartItemStateInfo(totalItems int, subtotal int) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -401,6 +401,70 @@ func CartItemCard(store entities.StoreWithCartMenus) templ.Component {
 			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p class=\"text-prose text-sm\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(totalItems))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 158, Col: 34}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var13 := `menu`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><p class=\"text-prose text-md\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var14 := `Rp. `
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var15 string
+		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(subtotal))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 162, Col: 41}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func CartItemCard(store entities.StoreWithCartMenus) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var16 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var16 == nil {
+			templ_7745c5c3_Var16 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-card id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -409,7 +473,7 @@ func CartItemCard(store entities.StoreWithCartMenus) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\" hx-trigger=\"click\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\"><div slot=\"header\" class=\"flex flex-row justify-between items-center\" hx-trigger=\"click\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -417,16 +481,16 @@ func CartItemCard(store entities.StoreWithCartMenus) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"section\" hx-push-url=\"true\" hx-swap=\"innerHTML\"><div slot=\"header\" class=\"flex flex-row justify-between items-center\"><p class=\"text-prose text-md truncate\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"section\" hx-push-url=\"true\" hx-swap=\"innerHTML\"><p class=\"text-prose text-md truncate\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var12 string
-		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(store.Name)
+		var templ_7745c5c3_Var17 string
+		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(store.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 172, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 182, Col: 28}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -456,6 +520,22 @@ func CartItemCard(store entities.StoreWithCartMenus) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div slot=\"footer\" class=\"flex flex-row justify-between items-center mx-4 my-2\" hx-trigger=\"cart-state-update from:body\" hx-get=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/carts/states/stores/%s", store.ID)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"this\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = CartItemStateInfo(len(store.Menus), store.Subtotal).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></sl-card>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -475,9 +555,9 @@ func CartItemSkeleton() templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var13 == nil {
-			templ_7745c5c3_Var13 = templ.NopComponent
+		templ_7745c5c3_Var18 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var18 == nil {
+			templ_7745c5c3_Var18 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-y-4\"><sl-card class=\"w-full\"><sl-skeleton effect=\"pulse\"></sl-skeleton><div class=\"flex flex-col justify-evenly mx-4 gap-y-2 py-2\"><sl-card class=\"ltr\"><div slot=\"image\"><sl-skeleton class=\"w-20 h-20\" style=\"--border-radius: 0;\" effect=\"pulse\"></sl-skeleton></div><div class=\"flex flex-col justify-between py-2 mx-2 h-full w-60\"><sl-skeleton effect=\"pulse\"></sl-skeleton> <sl-skeleton effect=\"pulse\"></sl-skeleton></div></sl-card> <sl-card class=\"ltr\"><div slot=\"image\"><sl-skeleton class=\"w-20 h-20\" style=\"--border-radius: 0;\" effect=\"pulse\"></sl-skeleton></div><div class=\"flex flex-col justify-between py-2 mx-2 h-full w-60\"><sl-skeleton effect=\"pulse\"></sl-skeleton> <sl-skeleton effect=\"pulse\"></sl-skeleton></div></sl-card></div></sl-card> <sl-card class=\"w-full\"><sl-skeleton effect=\"pulse\"></sl-skeleton><div class=\"flex flex-col justify-evenly mx-4 gap-y-2 py-2\"><sl-card class=\"ltr\"><div slot=\"image\"><sl-skeleton class=\"w-20 h-20\" style=\"--border-radius: 0;\" effect=\"pulse\"></sl-skeleton></div><div class=\"flex flex-col justify-between py-2 mx-2 h-full w-60\"><sl-skeleton effect=\"pulse\"></sl-skeleton> <sl-skeleton effect=\"pulse\"></sl-skeleton></div></sl-card> <sl-card class=\"ltr\"><div slot=\"image\"><sl-skeleton class=\"w-20 h-20\" style=\"--border-radius: 0;\" effect=\"pulse\"></sl-skeleton></div><div class=\"flex flex-col justify-between py-2 mx-2 h-full w-60\"><sl-skeleton effect=\"pulse\"></sl-skeleton> <sl-skeleton effect=\"pulse\"></sl-skeleton></div></sl-card></div></sl-card></div>")

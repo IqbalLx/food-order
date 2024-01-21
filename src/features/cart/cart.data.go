@@ -122,6 +122,25 @@ func countCartItems(ctx context.Context, db *pgxpool.Pool, cartID string) (int, 
 	return quantity, nil
 }
 
+func countCartMenus(ctx context.Context, db *pgxpool.Pool, cartID string) (int, error) {
+	sqlf.SetDialect(sqlf.PostgreSQL)
+	query := sqlf.
+		From("cart_items").
+		Where("cart_id = ?", cartID).
+		Where("quantity > 0").
+		Select("COALESCE(COUNT(DISTINCT store_menu_id), 0) as quantity")
+	
+	sql, args := query.String(), query.Args()
+	row := db.QueryRow(ctx, sql, args...)
+
+	var quantity int
+	err := row.Scan(&quantity); if err != nil {
+		return quantity, err
+	}
+
+	return quantity, nil
+}
+
 func countCartStores(ctx context.Context, db *pgxpool.Pool, cartID string) (int, error) {
 	sqlf.SetDialect(sqlf.PostgreSQL)
 	query := sqlf.
@@ -166,17 +185,46 @@ func countCartItemsByStoreID(ctx context.Context, db *pgxpool.Pool, cartID strin
 		Where("cart_id = ?", cartID).
 		Where("store_id = ?", storeID).
 		Where("quantity > 0").
-		Select("COALESCE(COUNT(*), 0) as subtotal")
+		Select("COALESCE(COUNT(*), 0) as count")
 	
 	sql, args := query.String(), query.Args()
 	row := db.QueryRow(ctx, sql, args...)
 
 	var count int
 	err := row.Scan(&count); if err != nil {
+		if err.Error() == pgx.ErrNoRows.Error() {
+			return 0, nil
+		}
+
 		return count, err
 	}
 
 	return count, nil
+}
+
+func sumCartItemsSubtotalByStoreID(ctx context.Context, db *pgxpool.Pool, cartID string, storeID string) (int, error) {
+	sqlf.SetDialect(sqlf.PostgreSQL)
+	query := sqlf.
+		From("cart_items").
+		Where("cart_id = ?", cartID).
+		Where("store_id = ?", storeID).
+		Where("quantity > 0").
+		GroupBy("store_id").
+		Select("COALESCE(SUM(subtotal), 0) as subtotal")
+	
+	sql, args := query.String(), query.Args()
+	row := db.QueryRow(ctx, sql, args...)
+
+	var subtotal int
+	err := row.Scan(&subtotal); if err != nil {
+		if err.Error() == pgx.ErrNoRows.Error() {
+			return 0, nil
+		}
+
+		return subtotal, err
+	}
+
+	return subtotal, nil
 }
 
 func deleteAllMenusFromCartByStoreID(ctx context.Context, db *pgxpool.Pool, cartID string, storeID string) error {

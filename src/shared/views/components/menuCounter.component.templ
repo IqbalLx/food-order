@@ -17,7 +17,7 @@ script updateQuantity(menuID string, step int, isIncreasing bool, origin string)
 }
 
 templ MenuCounter(menuID string, quantity int, origin string) {
-    <div class="flex flex-row items-center rounded-md pop-out" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) }>
+    <div class="flex flex-row items-center rounded-md" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) }>
         <sl-button 
             size="small"
             class="text-sm m-0 p-0"

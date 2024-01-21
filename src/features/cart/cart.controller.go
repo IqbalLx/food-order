@@ -27,6 +27,7 @@ func NewCartController(app *fiber.App) {
 
 	states := carts.Group("/states")
 	states.Get("/", getCartStateHandler)
+	states.Get("/stores/:store_id", getStoreCartStateHandler)
 }
 
 func getCartViewHandler(c *fiber.Ctx) error {
@@ -141,14 +142,14 @@ func getCartStateHandler(c *fiber.Ctx) error {
 		return err
 	}
 
-	if state.CountItems == 0 {
+	if state.CountMenus == 0 {
 		return adaptor.HTTPHandler(
 			templ.Handler(layouts.CartFooterEmpty()),
 		)(c)
 	}
 
 	return adaptor.HTTPHandler(
-		templ.Handler(layouts.CartFooter(state.CountStores, state.CountItems, state.TotalItems)),
+		templ.Handler(layouts.CartFooter(state.CountStores, state.CountMenus, state.TotalItems)),
 	)(c)
 }
 
@@ -192,4 +193,23 @@ func deleteMenuFromCartHandler(c *fiber.Ctx) error {
 
 	// empty string indicates the item removed from view
 	return c.Status(200).SendString("")
+}
+
+func getStoreCartStateHandler(c *fiber.Ctx) error {
+	storeID := c.Params("store_id")
+
+	appConfig := utils.GetLocal[*utils.AppConfig](c, "appConfig")
+	cartID := c.Cookies(appConfig.Name + "__cart")
+
+	db := utils.GetLocal[*pgxpool.Pool](c, "db")
+
+	countItems, subtotalItems, err := doGetCartStateByStoreID(c.Context(), db, cartID, storeID); if err != nil {
+		return err
+	}
+
+	return adaptor.HTTPHandler(
+		templ.Handler(
+			components.CartItemStateInfo(countItems, subtotalItems),
+		),
+	)(c)
 }

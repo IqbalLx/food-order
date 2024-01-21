@@ -246,7 +246,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 			return templ_7745c5c3_Err
 		}
 		if menu.IsAvailable {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-row justify-between items-end w-full\"><p class=\"text-sm text-slate-500 flex-none mb-1\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-row justify-between items-end w-full\"><p class=\"text-sm text-slate-500 flex-none mb-1 text-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -275,7 +275,7 @@ func MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQua
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Var10 := `Jadi yang pertama cobain!`
+				templ_7745c5c3_Var10 := `Yuk cobain!`
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

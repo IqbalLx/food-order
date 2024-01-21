@@ -76,11 +76,11 @@ templ MenuCard(store entities.StoreWithCategories, menu entities.StoreMenuWithQu
                     </div>
                     if (menu.IsAvailable) {
                         <div class="flex flex-row justify-between items-end w-full">
-                            <p class="text-sm text-slate-500 flex-none mb-1">
+                            <p class="text-sm text-slate-500 flex-none mb-1 text-wrap">
                                 if (menu.OrderedCount > 0) {
                                     Dipesan { strconv.Itoa(menu.OrderedCount) } kali
                                 } else {
-                                    Jadi yang pertama cobain!
+                                    Yuk cobain!
                                 }
                             </p>
 

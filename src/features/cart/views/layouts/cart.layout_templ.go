@@ -44,7 +44,7 @@ func CartItems(stores []entities.StoreWithCartMenus, countItems int, totalItems 
 	})
 }
 
-func CartFooter(countStores int, countItems int, totalItems int) templ.Component {
+func CartFooter(countStores int, countMenus int, total int) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -62,7 +62,7 @@ func CartFooter(countStores int, countItems int, totalItems int) templ.Component
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(countItems))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(countMenus))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/layouts/cart.layout.templ`, Line: 29, Col: 42}
 		}
@@ -107,9 +107,9 @@ func CartFooter(countStores int, countItems int, totalItems int) templ.Component
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(totalItems))
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(total))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/layouts/cart.layout.templ`, Line: 33, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/layouts/cart.layout.templ`, Line: 33, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -223,7 +223,7 @@ func Cart() templ.Component {
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col h-screen justify-between overflow-y-auto no-scrollbar gap-y-4\" hx-trigger=\"load, cart-refresh from:body\" hx-get=\"/carts/items\" hx-target=\"this\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\"><div class=\".htmx-indicator\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col h-screen overflow-y-auto no-scrollbar gap-y-4 items-start\" hx-trigger=\"load, cart-refresh from:body\" hx-get=\"/carts/items\" hx-target=\"this\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\"><div class=\".htmx-indicator\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -231,7 +231,7 @@ func Cart() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div id=\"cart-footer\" class=\"sticky bottom-0 z-50 bg-white\" hx-trigger=\"load\" hx-get=\"/carts/states\" hx-target=\"this\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div id=\"cart-footer\" class=\"sticky bottom-0 z-50 bg-white border-2 border-t-amber-500\" hx-trigger=\"load\" hx-get=\"/carts/states\" hx-target=\"this\" hx-swap=\"innerHTML\" hx-indicator=\".htmx-indicator\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
