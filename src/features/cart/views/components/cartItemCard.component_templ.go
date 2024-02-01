@@ -20,24 +20,17 @@ import (
 
 func updateQuantity(menuID string, step int, isIncreasing bool, origin string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_updateQuantity_5aac`,
-		Function: `function __templ_updateQuantity_5aac(menuID, step, isIncreasing, origin){const inputElem = document.getElementById(` + "`" + `quantity-input__${origin}-${menuID}` + "`" + `);
+		Name: `__templ_updateQuantity_85d3`,
+		Function: `function __templ_updateQuantity_85d3(menuID, step, isIncreasing, origin){const inputElem = document.getElementById(` + "`" + `quantity-input__${origin}-${menuID}` + "`" + `);
     const displayElem = document.getElementById(` + "`" + `quantity-display__${origin}-${menuID}` + "`" + `);
-    const cartSubtractCounter = document.getElementById(` + "`" + `cart-subtract-counter__${menuID}` + "`" + `)
 
     const quantity = parseInt(inputElem.value);
     const newQuantity = isIncreasing ? quantity + step : Math.max(1, quantity - step);
 
-    if (newQuantity === 1) {
-        cartSubtractCounter.setAttribute("disabled", "")
-    } else {
-        cartSubtractCounter.removeAttribute("disabled")
-    }
-
     inputElem.value = newQuantity.toString();
     displayElem.innerText = newQuantity.toString()}`,
-		Call:       templ.SafeScript(`__templ_updateQuantity_5aac`, menuID, step, isIncreasing, origin),
-		CallInline: templ.SafeScriptInline(`__templ_updateQuantity_5aac`, menuID, step, isIncreasing, origin),
+		Call:       templ.SafeScript(`__templ_updateQuantity_85d3`, menuID, step, isIncreasing, origin),
+		CallInline: templ.SafeScriptInline(`__templ_updateQuantity_85d3`, menuID, step, isIncreasing, origin),
 	}
 }
 
@@ -62,7 +55,7 @@ func CartMenuCounter(menuID string, quantity int, origin string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-sync=\"this:replace\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -70,15 +63,7 @@ func CartMenuCounter(menuID string, quantity int, origin string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-button id=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("cart-subtract-counter__%s", menuID)))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" size=\"small\" class=\"text-sm m-0 p-0\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-button size=\"small\" class=\"text-sm m-0 p-0\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -168,7 +153,7 @@ func CartMenuCounter(menuID string, quantity int, origin string) templ.Component
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(quantity))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 64, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 57, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -182,15 +167,7 @@ func CartMenuCounter(menuID string, quantity int, origin string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-button id=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("cart-plus-counter__%s", menuID)))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" size=\"small\" class=\"text-sm m-0 p-0\" circle onclick=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<sl-button size=\"small\" class=\"text-sm m-0 p-0\" circle onclick=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -278,7 +255,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(menu.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 112, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 104, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -331,7 +308,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.PricePromo))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 142, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 134, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -344,7 +321,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 143, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 135, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -362,7 +339,7 @@ func CartMenuCard(storeSlug string, storeID string, menu entities.StoreMenuWithQ
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(menu.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 146, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 138, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -408,7 +385,7 @@ func CartItemStateInfo(totalItems int, subtotal int) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(totalItems))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 158, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 150, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -435,7 +412,7 @@ func CartItemStateInfo(totalItems int, subtotal int) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(subtotal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 162, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 154, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -488,7 +465,7 @@ func CartItemCard(store entities.StoreWithCartMenus) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(store.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 182, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/features/cart/views/components/cartItemCard.component.templ`, Line: 174, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {

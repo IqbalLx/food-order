@@ -56,7 +56,7 @@ func main() {
 	if appConfig.Environment != "dev" {
 		app.Use(requestid.New())
 		app.Use(cors.New(cors.Config{
-			AllowOrigins: "https://foodie.learn-and.live",
+			AllowOrigins: "https://foodies.learn-and.live",
 			AllowHeaders:  "Origin, Content-Type, Accept",
 		}))
 		app.Use(limiter.New(limiter.Config{

@@ -11,25 +11,17 @@ import (
 script updateQuantity(menuID string, step int, isIncreasing bool, origin string) {
     const inputElem = document.getElementById(`quantity-input__${origin}-${menuID}`);
     const displayElem = document.getElementById(`quantity-display__${origin}-${menuID}`);
-    const cartSubtractCounter = document.getElementById(`cart-subtract-counter__${menuID}`)
 
     const quantity = parseInt(inputElem.value);
     const newQuantity = isIncreasing ? quantity + step : Math.max(1, quantity - step);
-
-    if (newQuantity === 1) {
-        cartSubtractCounter.setAttribute("disabled", "")
-    } else {
-        cartSubtractCounter.removeAttribute("disabled")
-    }
 
     inputElem.value = newQuantity.toString();
     displayElem.innerText = newQuantity.toString()
 }
 
 templ CartMenuCounter(menuID string, quantity int, origin string) {
-    <div class="flex flex-row items-center rounded-md" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) }>
+    <div class="flex flex-row items-center rounded-md" id={ fmt.Sprintf("menu-counter__%s-%s", origin, menuID) } hx-sync="this:replace">
         <sl-button 
-            id={ fmt.Sprintf("cart-subtract-counter__%s", menuID) }
             size="small"
             class="text-sm m-0 p-0"
             disabled?={ quantity == 1 }
@@ -40,6 +32,7 @@ templ CartMenuCounter(menuID string, quantity int, origin string) {
             hx-trigger="click consume delay:300ms"
             hx-include={ fmt.Sprintf("#form-input__%s-%s", origin, menuID) }
             hx-target={ fmt.Sprintf("#menu-counter__%s-%s", origin, menuID) }
+
             hx-swap="outerHTML"
         >
             <sl-icon name="dash" label="Subtract quantity" class="text-md"></sl-icon>
@@ -66,7 +59,6 @@ templ CartMenuCounter(menuID string, quantity int, origin string) {
         </p>
 
         <sl-button 
-            id={ fmt.Sprintf("cart-plus-counter__%s", menuID) }
             size="small"
             class="text-sm m-0 p-0"
             circle
