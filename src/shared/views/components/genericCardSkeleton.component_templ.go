@@ -31,7 +31,7 @@ func GenericCardSkeleton(id string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div slot=\"image\"><sl-skeleton class=\"w-32 h-32\" style=\"--border-radius: 0;\"></sl-skeleton></div><div class=\"w-56 sm:w-60 h-32 md:w-64 flex-initial mx-2\"><div class=\"h-full flex flex-col justify-evenly\"><div class=\"mb-1 flex flex-col justify-start gap-2\"><sl-skeleton effect=\"pulse\"></sl-skeleton> <sl-skeleton class=\"w-80%\" effect=\"pulse\"></sl-skeleton></div><div class=\"w-full flex flex-row flex-wrap gap-1\"><sl-skeleton class=\"w-full\" effect=\"pulse\"></sl-skeleton></div></div></div></sl-card>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div slot=\"image\"><sl-skeleton class=\"w-32 h-32\" style=\"--border-radius: 0;\" effect=\"pulse\"></sl-skeleton></div><div class=\"w-56 sm:w-60 h-32 md:w-64 flex-initial mx-2\"><div class=\"h-full flex flex-col justify-evenly\"><div class=\"mb-1 flex flex-col justify-start gap-2\"><sl-skeleton effect=\"pulse\"></sl-skeleton> <sl-skeleton class=\"w-80%\" effect=\"pulse\"></sl-skeleton></div><div class=\"w-full flex flex-row flex-wrap gap-1\"><sl-skeleton class=\"w-full\" effect=\"pulse\"></sl-skeleton></div></div></div></sl-card>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

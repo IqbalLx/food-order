@@ -11,7 +11,7 @@ templ StoreCard(store entities.StoreWithCategories, size int, lastInList bool, i
     <div hx-boost="true" hx-indicator=".htmx-indicator">
         <a href={ templ.URL(fmt.Sprintf("/stores/%s", store.Slug)) } class="w-full">
         <sl-card 
-            class="ltr list card-image bg-base-100 shadow-sm w-full"
+            class="ltr list card-image bg-base-100 shadow-sm w-full flex"
             if (lastInList && isScrollable) {
                 hx-trigger="intersect once"
                 hx-get={ fmt.Sprintf("/stores?size=%d&last_store_secondary_id=%d", size, store.SecondaryID) }

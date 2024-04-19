@@ -39,7 +39,7 @@ func StoreCard(store entities.StoreWithCategories, size int, lastInList bool, is
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\"><sl-card class=\"ltr list card-image bg-base-100 shadow-sm w-full\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"w-full\"><sl-card class=\"ltr list card-image bg-base-100 shadow-sm w-full flex\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
